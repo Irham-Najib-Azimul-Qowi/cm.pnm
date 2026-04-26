@@ -1,0 +1,16 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/api/$1"
+        },
+        {
+            "source": "/uploads/(.*)",
+            "destination": "https://your-storage.com/uploads/$1"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
