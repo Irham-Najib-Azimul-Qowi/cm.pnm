@@ -12,6 +12,10 @@ import Join from './pages/Join'
 import Login from './pages/Login'
 import AdminLayout from './components/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
+import ArticlesManagement from './pages/admin/Articles'
+import ArticleForm from './pages/admin/ArticleForm'
+import ActivitiesManagement from './pages/admin/Activities'
+import ActivityForm from './pages/admin/ActivityForm'
 
 function ScrollToTop() {
     const { pathname } = useLocation()
@@ -45,8 +49,12 @@ function App() {
                     {/* Admin Protected Routes */}
                     <Route path="/dashboard" element={<AdminLayout />}>
                         <Route index element={<Dashboard />} />
-                        <Route path="articles" element={<div className="p-4"><h1 className="text-white">Articles Management</h1></div>} />
-                        <Route path="activities" element={<div className="p-4"><h1 className="text-white">Activities Management</h1></div>} />
+                        <Route path="articles" element={<ArticlesManagement />} />
+                        <Route path="articles/create" element={<ArticleForm />} />
+                        <Route path="articles/edit/:id" element={<ArticleForm />} />
+                        <Route path="activities" element={<ActivitiesManagement />} />
+                        <Route path="activities/create" element={<ActivityForm />} />
+                        <Route path="activities/edit/:id" element={<ActivityForm />} />
                     </Route>
                 </Routes>
             </main>
