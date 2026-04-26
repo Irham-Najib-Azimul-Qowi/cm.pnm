@@ -1,5 +1,4 @@
 package handler
-// Forced update to ensure Vercel picks up the removed "time" import
 
 import (
 	"encoding/json"
@@ -22,7 +21,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Simple validation
 	if pendaftaran.NamaLengkap == "" || pendaftaran.NIM == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Nama and NIM are required"})
@@ -30,8 +28,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	database := db.GetDB()
-
-	// Check if already registered
 	var existing models.Pendaftaran
 	if err := database.Where("nim = ?", pendaftaran.NIM).First(&existing).Error; err == nil {
 		w.WriteHeader(http.StatusConflict)

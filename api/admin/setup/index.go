@@ -10,7 +10,6 @@ import (
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	// Simple protection with a key
 	key := r.URL.Query().Get("key")
 	if key != "setup_123" {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -35,7 +34,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Seed Admin
 	var count int64
 	database.Model(&models.User{}).Count(&count)
 	if count == 0 {

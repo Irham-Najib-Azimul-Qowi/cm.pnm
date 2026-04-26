@@ -15,9 +15,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For Vercel, the slug is usually in the URL or can be extracted from the path
-	// In [slug].go, it's often available in the request URL path
-	pathParts := strings.Split(r.URL.Path, "/")
+	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	slug := pathParts[len(pathParts)-1]
 
 	if slug == "" || slug == "articles" {
@@ -36,7 +34,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Increment views
 	database.Model(&artikel).Update("views", artikel.Views+1)
 
 	w.Header().Set("Content-Type", "application/json")

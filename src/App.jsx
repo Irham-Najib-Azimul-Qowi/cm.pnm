@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
+import About from './pages/About'
+import Activities from './pages/Activities'
+import Articles from './pages/Articles'
+import ArticleDetail from './pages/ArticleDetail'
+import Contact from './pages/Contact'
+import Join from './pages/Join'
 import Login from './pages/Login'
+import AdminLayout from './components/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
-
-// Placeholder for other pages
-const About = () => <div className="container py-5"><h1 className="text-white">Tentang Kami</h1></div>
-const Activities = () => <div className="container py-5"><h1 className="text-white">Kegiatan</h1></div>
-const Articles = () => <div className="container py-5"><h1 className="text-white">Artikel</h1></div>
-const Contact = () => <div className="container py-5"><h1 className="text-white">Kontak</h1></div>
-const Join = () => <div className="container py-5"><h1 className="text-white">Bergabung</h1></div>
 
 function ScrollToTop() {
     const { pathname } = useLocation()
@@ -25,7 +25,7 @@ function ScrollToTop() {
 
 function App() {
     const location = useLocation()
-    const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname === '/login'
+    const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname === '/login' || location.pathname === '/join'
 
     return (
         <div className="app-wrapper">
@@ -37,10 +37,17 @@ function App() {
                     <Route path="/tentang-kami" element={<About />} />
                     <Route path="/kegiatan" element={<Activities />} />
                     <Route path="/artikel" element={<Articles />} />
+                    <Route path="/artikel/:slug" element={<ArticleDetail />} />
                     <Route path="/kontak" element={<Contact />} />
-                    <Route path="/bergabung" element={<Join />} />
+                    <Route path="/join" element={<Join />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+
+                    {/* Admin Protected Routes */}
+                    <Route path="/dashboard" element={<AdminLayout />}>
+                        <Route index element={<Dashboard />} />
+                        <Route path="articles" element={<div className="p-4"><h1 className="text-white">Articles Management</h1></div>} />
+                        <Route path="activities" element={<div className="p-4"><h1 className="text-white">Activities Management</h1></div>} />
+                    </Route>
                 </Routes>
             </main>
             {!isDashboard && <Footer />}
