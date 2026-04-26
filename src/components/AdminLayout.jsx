@@ -27,11 +27,11 @@ const AdminLayout = ({ children }) => {
 
     const sidebarLinks = [
         { name: 'Ikhtisar', path: '/dashboard', icon: 'bi-speedometer2' },
-        { name: 'Pendaftar', path: '/dashboard/pendaftar', icon: 'bi-backpack-fill' },
-        { name: 'Artikel', path: '/dashboard/artikel', icon: 'bi-file-earmark-text' },
-        { name: 'Kegiatan', path: '/dashboard/kegiatan', icon: 'bi-calendar3-event' },
-        { name: 'Pengurus', path: '/dashboard/pengurus', icon: 'bi-people-fill' },
-        { name: 'Pesan', path: '/dashboard/pesan', icon: 'bi-chat-left-dots' },
+        { name: 'Artikel', path: '/dashboard/articles', icon: 'bi-journal-richtext' },
+        { name: 'Kegiatan', path: '/dashboard/activities', icon: 'bi-calendar-event' },
+        { name: 'Pengurus', path: '/dashboard/officers', icon: 'bi-people' },
+        { name: 'Pendaftar', path: '/dashboard/registrations', icon: 'bi-person-plus' },
+        { name: 'Pesan', path: '/dashboard/messages', icon: 'bi-chat-left-dots' },
     ]
 
     const date = new Date().toLocaleDateString('id-ID', {

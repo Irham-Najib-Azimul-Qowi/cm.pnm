@@ -16,6 +16,10 @@ import ArticlesManagement from './pages/admin/Articles'
 import ArticleForm from './pages/admin/ArticleForm'
 import ActivitiesManagement from './pages/admin/Activities'
 import ActivityForm from './pages/admin/ActivityForm'
+import RegistrationsManagement from './pages/admin/Registrations'
+import MessagesManagement from './pages/admin/Messages'
+import OfficersManagement from './pages/admin/Officers'
+import OfficerForm from './pages/admin/OfficerForm'
 
 function ScrollToTop() {
     const { pathname } = useLocation()
@@ -55,6 +59,11 @@ function App() {
                         <Route path="activities" element={<ActivitiesManagement />} />
                         <Route path="activities/create" element={<ActivityForm />} />
                         <Route path="activities/edit/:id" element={<ActivityForm />} />
+                        <Route path="registrations" element={<RegistrationsManagement />} />
+                        <Route path="messages" element={<MessagesManagement />} />
+                        <Route path="officers" element={<OfficersManagement />} />
+                        <Route path="officers/create" element={<OfficerForm />} />
+                        <Route path="officers/edit/:id" element={<OfficerForm />} />
                     </Route>
                 </Routes>
             </main>
