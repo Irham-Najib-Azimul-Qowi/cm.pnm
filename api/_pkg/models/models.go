@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type User struct {
@@ -54,7 +53,7 @@ type Pendaftaran struct {
 	Jurusan      string    `json:"jurusan"`
 	ProgramStudi string    `json:"program_studi"`
 	NoHP         string    `json:"no_hp"`
-	Status       string    `json:"status"` // pending, approved, rejected
+	Status       string    `json:"status"`
 	IsApproved   bool      `json:"is_approved"`
 	CreatedAt    time.Time `json:"created_at"`
 }

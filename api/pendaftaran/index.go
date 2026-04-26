@@ -20,21 +20,10 @@ func pendaftaranHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var p models.Pendaftaran
-	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
+	json.NewDecoder(r.Body).Decode(&p)
 	p.Status = "pending"
-	p.IsApproved = false
 
 	database := db.GetDB()
-	if err := database.Create(&p).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
+	database.Create(&p)
 	json.NewEncoder(w).Encode(p)
 }

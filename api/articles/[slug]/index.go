@@ -15,26 +15,17 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articleDetailHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	slug := pathParts[len(pathParts)-1]
 
 	database := db.GetDB()
 	var artikel models.Artikel
 
-	// Preload User for Author info
 	if err := database.Preload("User").Where("slug = ?", slug).First(&artikel).Error; err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Artikel tidak ditemukan"})
 		return
 	}
 
-	// Increment Views
 	database.Model(&artikel).Update("views", artikel.Views+1)
-
 	json.NewEncoder(w).Encode(artikel)
 }

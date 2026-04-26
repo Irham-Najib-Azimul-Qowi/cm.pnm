@@ -18,7 +18,6 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	database := db.GetDB()
 	var artikels []models.Artikel
 
-	// Filters
 	query := database.Preload("User").Order("created_at desc")
 	
 	search := r.URL.Query().Get("search")
@@ -33,7 +32,6 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("status = ?", "published")
 	}
 
-	// Pagination
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	if page == 0 { page = 1 }
 	perPage, _ := strconv.Atoi(r.URL.Query().Get("per_page"))
@@ -44,15 +42,9 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	
 	query.Offset((page - 1) * perPage).Limit(perPage).Find(&artikels)
 
-	// Stats for Admin
+	// Admin stats included for dashboard
 	var totalViews int64
 	database.Model(&models.Artikel{}).Select("sum(views)").Scan(&totalViews)
-	
-	var publishedCount int64
-	database.Model(&models.Artikel{}).Where("status = ?", "published").Count(&publishedCount)
-	
-	var draftCount int64
-	database.Model(&models.Artikel{}).Where("status = ?", "draft").Count(&draftCount)
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"data": artikels,
@@ -62,10 +54,8 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 			"total":        total,
 		},
 		"stats": map[string]interface{}{
-			"total":       total,
-			"published":   publishedCount,
-			"draft":       draftCount,
 			"total_views": totalViews,
+			"total": total,
 		},
 	})
 }

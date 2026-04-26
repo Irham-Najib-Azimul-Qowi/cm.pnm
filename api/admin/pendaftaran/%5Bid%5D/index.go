@@ -12,16 +12,11 @@ import (
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	middleware.Recover(middleware.CORS(middleware.JSONResponse(activitiesAdminDetailHandler)))(w, r)
+	middleware.Recover(middleware.CORS(middleware.JSONResponse(adminPendaftaranDetailHandler)))(w, r)
 }
 
-func activitiesAdminDetailHandler(w http.ResponseWriter, r *http.Request) {
-	// Auth Check ... Standard ...
+func adminPendaftaranDetailHandler(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	_, err := auth.ValidateToken(tokenString)
 	if err != nil {
@@ -33,27 +28,21 @@ func activitiesAdminDetailHandler(w http.ResponseWriter, r *http.Request) {
 	id := pathParts[len(pathParts)-1]
 
 	database := db.GetDB()
-	var kegiatan models.Kegiatan
-
-	if err := database.Where("id = ?", id).First(&kegiatan).Error; err != nil {
+	var reg models.Pendaftaran
+	if err := database.Where("id = ?", id).First(&reg).Error; err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	if r.Method == http.MethodGet {
-		json.NewEncoder(w).Encode(kegiatan)
-		return
-	}
-
-	if r.Method == http.MethodPut || r.Method == http.MethodPatch {
-		json.NewDecoder(r.Body).Decode(&kegiatan)
-		database.Save(&kegiatan)
-		json.NewEncoder(w).Encode(kegiatan)
+	if r.Method == http.MethodPut {
+		json.NewDecoder(r.Body).Decode(&reg)
+		database.Save(&reg)
+		json.NewEncoder(w).Encode(reg)
 		return
 	}
 
 	if r.Method == http.MethodDelete {
-		database.Delete(&kegiatan)
+		database.Delete(&reg)
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}

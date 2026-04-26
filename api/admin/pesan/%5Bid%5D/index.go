@@ -12,16 +12,11 @@ import (
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	middleware.Recover(middleware.CORS(middleware.JSONResponse(articlesAdminDetailHandler)))(w, r)
+	middleware.Recover(middleware.CORS(middleware.JSONResponse(adminPesanDetailHandler)))(w, r)
 }
 
-func articlesAdminDetailHandler(w http.ResponseWriter, r *http.Request) {
-	// Auth Check
+func adminPesanDetailHandler(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	_, err := auth.ValidateToken(tokenString)
 	if err != nil {
@@ -33,27 +28,21 @@ func articlesAdminDetailHandler(w http.ResponseWriter, r *http.Request) {
 	id := pathParts[len(pathParts)-1]
 
 	database := db.GetDB()
-	var artikel models.Artikel
-
-	if err := database.Where("id = ?", id).First(&artikel).Error; err != nil {
+	var m models.Pesan
+	if err := database.Where("id = ?", id).First(&m).Error; err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	if r.Method == http.MethodGet {
-		json.NewEncoder(w).Encode(artikel)
-		return
-	}
-
-	if r.Method == http.MethodPut || r.Method == http.MethodPatch {
-		json.NewDecoder(r.Body).Decode(&artikel)
-		database.Save(&artikel)
-		json.NewEncoder(w).Encode(artikel)
+	if r.Method == http.MethodPut {
+		json.NewDecoder(r.Body).Decode(&m)
+		database.Save(&m)
+		json.NewEncoder(w).Encode(m)
 		return
 	}
 
 	if r.Method == http.MethodDelete {
-		database.Delete(&artikel)
+		database.Delete(&m)
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
