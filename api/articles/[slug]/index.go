@@ -23,24 +23,18 @@ func articleDetailHandler(w http.ResponseWriter, r *http.Request) {
 	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	slug := pathParts[len(pathParts)-1]
 
-	if slug == "" || slug == "articles" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Slug is required"})
-		return
-	}
-
 	database := db.GetDB()
 	var artikel models.Artikel
 
-	result := database.Preload("User").Where("slug = ?", slug).First(&artikel)
-	if result.Error != nil {
+	// Preload User for Author info
+	if err := database.Preload("User").Where("slug = ?", slug).First(&artikel).Error; err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Artikel not found"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "Artikel tidak ditemukan"})
 		return
 	}
 
+	// Increment Views
 	database.Model(&artikel).Update("views", artikel.Views+1)
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(artikel)
 }

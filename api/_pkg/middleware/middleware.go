@@ -11,6 +11,7 @@ func Recover(next http.HandlerFunc) http.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				fmt.Printf("panic: %v\n%s", err, debug.Stack())
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintf(w, `{"error":"Internal Server Error"}`)
 			}

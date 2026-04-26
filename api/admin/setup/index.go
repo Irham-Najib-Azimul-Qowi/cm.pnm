@@ -21,7 +21,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	database := db.GetDB()
 
 	// Sync Schema
-	err := database.AutoMigrate(
+	database.AutoMigrate(
 		&models.User{},
 		&models.Artikel{},
 		&models.Kegiatan{},
@@ -30,14 +30,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		&models.Pengurus{},
 	)
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to migrate: " + err.Error()})
-		return
-	}
-
-	var count int64
-	database.Model(&models.User{}).Count(&count)
 	// Seed initial admin
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("admin123"), bcrypt.DefaultCost)
 	admin := models.User{
@@ -59,43 +51,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			Status:       "published",
 			UserID:       admin.ID,
 		},
-		{
-			Judul:        "Laporan Ekspedisi Gunung Semeru",
-			Slug:         "laporan-ekspedisi-gunung-semeru",
-			Excerpt:      "Catatan perjalanan tim Cakra Manggala menapaki puncak tertinggi Jawa.",
-			Konten:       "<p>Gunung Semeru memberikan pelajaran berharga tentang ketabahan...</p>",
-			GambarUtama:  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop",
-			Status:       "published",
-			UserID:       admin.ID,
-		},
 	}
 	for _, art := range articles {
 		database.FirstOrCreate(&art, models.Artikel{Slug: art.Slug})
-	}
-
-	// Seed some activities
-	activities := []models.Kegiatan{
-		{
-			JudulKegiatan:      "DIKSAR XV",
-			Tahun:              2023,
-			TanggalPelaksanaan: time.Now().AddDate(-1, 0, 0),
-			Tempat:             "Lereng Lawu",
-			Materi:             "Pendidikan dasar mental dan fisik anggota baru.",
-			Sifat:              "internal",
-			UserID:             admin.ID,
-		},
-		{
-			JudulKegiatan:      "Bakwan Sosial 2024",
-			Tahun:              2024,
-			TanggalPelaksanaan: time.Now(),
-			Tempat:             "Madiun",
-			Materi:             "Aksi kepedulian masyarakat sekitar kampus.",
-			Sifat:              "eksternal",
-			UserID:             admin.ID,
-		},
-	}
-	for _, act := range activities {
-		database.Where(models.Kegiatan{JudulKegiatan: act.JudulKegiatan}).FirstOrCreate(&act)
 	}
 
 	w.WriteHeader(http.StatusOK)

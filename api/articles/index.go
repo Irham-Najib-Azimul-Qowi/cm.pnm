@@ -15,69 +15,57 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
 	database := db.GetDB()
+	var artikels []models.Artikel
 
+	// Filters
+	query := database.Preload("User").Order("created_at desc")
+	
 	search := r.URL.Query().Get("search")
-	status := r.URL.Query().Get("status")
-	perPageStr := r.URL.Query().Get("per_page")
-	pageStr := r.URL.Query().Get("page")
-
-	perPage := 10
-	if p, err := strconv.Atoi(perPageStr); err == nil && p > 0 {
-		perPage = p
-	}
-
-	page := 1
-	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
-		page = p
-	}
-
-	query := database.Model(&models.Artikel{}).Preload("User").Order("created_at desc")
-
 	if search != "" {
-		query = query.Where("judul LIKE ? OR konten LIKE ?", "%"+search+"%", "%"+search+"%")
+		query = query.Where("judul ILIKE ?", "%"+search+"%")
 	}
 
+	status := r.URL.Query().Get("status")
 	if status != "" {
 		query = query.Where("status = ?", status)
+	} else {
+		query = query.Where("status = ?", "published")
 	}
 
+	// Pagination
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	if page == 0 { page = 1 }
+	perPage, _ := strconv.Atoi(r.URL.Query().Get("per_page"))
+	if perPage == 0 { perPage = 6 }
+	
 	var total int64
-	query.Count(&total)
+	query.Model(&models.Artikel{}).Count(&total)
+	
+	query.Offset((page - 1) * perPage).Limit(perPage).Find(&artikels)
 
-	var artikels []models.Artikel
-	offset := (page - 1) * perPage
-	query.Limit(perPage).Offset(offset).Find(&artikels)
-
-	// Stats
-	var totalPublished int64
-	var totalDraft int64
+	// Stats for Admin
 	var totalViews int64
-	database.Model(&models.Artikel{}).Where("status = ?", "published").Count(&totalPublished)
-	database.Model(&models.Artikel{}).Where("status = ?", "draft").Count(&totalDraft)
-	database.Model(&models.Artikel{}).Select("sum(views)").Row().Scan(&totalViews)
+	database.Model(&models.Artikel{}).Select("sum(views)").Scan(&totalViews)
+	
+	var publishedCount int64
+	database.Model(&models.Artikel{}).Where("status = ?", "published").Count(&publishedCount)
+	
+	var draftCount int64
+	database.Model(&models.Artikel{}).Where("status = ?", "draft").Count(&draftCount)
 
-	response := map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]interface{}{
 		"data": artikels,
 		"meta": map[string]interface{}{
-			"total":        total,
-			"page":         page,
-			"per_page":     perPage,
+			"current_page": page,
 			"last_page":    (total + int64(perPage) - 1) / int64(perPage),
+			"total":        total,
 		},
 		"stats": map[string]interface{}{
 			"total":       total,
-			"published":   totalPublished,
-			"draft":       totalDraft,
+			"published":   publishedCount,
+			"draft":       draftCount,
 			"total_views": totalViews,
 		},
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	})
 }
