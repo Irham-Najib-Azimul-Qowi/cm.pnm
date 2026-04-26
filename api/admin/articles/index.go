@@ -33,6 +33,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Robust Image Processing
+		artikel.GambarUtama = img.ProcessImageURL(artikel.GambarUtama)
+
 		artikel.UserID = claims.UserID
 		if err := database.Create(&artikel).Error; err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

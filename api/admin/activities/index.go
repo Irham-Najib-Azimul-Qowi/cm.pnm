@@ -7,6 +7,7 @@ import (
 
 	"cakra-manggala-api/api/_pkg/auth"
 	"cakra-manggala-api/api/_pkg/db"
+	"cakra-manggala-api/api/_pkg/img"
 	"cakra-manggala-api/api/_pkg/models"
 )
 
@@ -33,6 +34,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		kegiatan.GambarUtama = img.ProcessImageURL(kegiatan.GambarUtama)
 		kegiatan.UserID = claims.UserID
 		if err := database.Create(&kegiatan).Error; err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

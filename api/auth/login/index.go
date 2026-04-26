@@ -6,16 +6,16 @@ import (
 
 	"cakra-manggala-api/api/_pkg/auth"
 	"cakra-manggala-api/api/_pkg/db"
+	"cakra-manggala-api/api/_pkg/middleware"
 	"cakra-manggala-api/api/_pkg/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+func Handler(w http.ResponseWriter, r *http.Request) {
+	middleware.Recover(middleware.CORS(middleware.JSONResponse(loginHandler)))(w, r)
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return

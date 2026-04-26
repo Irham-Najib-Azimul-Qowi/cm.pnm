@@ -6,10 +6,15 @@ import (
 	"strconv"
 
 	"cakra-manggala-api/api/_pkg/db"
+	"cakra-manggala-api/api/_pkg/middleware"
 	"cakra-manggala-api/api/_pkg/models"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
+	middleware.Recover(middleware.CORS(middleware.JSONResponse(articlesHandler)))(w, r)
+}
+
+func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
