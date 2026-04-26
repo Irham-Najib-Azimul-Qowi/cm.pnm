@@ -1,0 +1,60 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-check:
+    name: Go Backend Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache-dependency-path: go.mod
+
+      - name: Download Dependencies
+        run: go mod tidy
+        working-directory: ./
+
+      - name: Verify Go Build (Isolation Check)
+        run: |
+          # We need to ensure each serverless function directory builds independently
+          # This prevents "Handler redeclared" errors which happen when multiple files in /api are in the same package
+          for dir in $(find api -maxdepth 5 -name "index.go" -exec dirname {} \;); do
+            echo "Checking package in $dir..."
+            go build -v ./$dir
+          done
+
+  frontend-check:
+    name: React Frontend Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Check
+        run: npm run build
+
+  deploy-gate:
+    name: Production Guard
+    needs: [backend-check, frontend-check]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Signal Success
+        run: echo "Code is production-ready. Proceeding to Vercel auto-deploy."
