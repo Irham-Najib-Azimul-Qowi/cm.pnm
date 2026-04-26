@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"cakra-manggala-api/api/_pkg/db"
 	"cakra-manggala-api/api/_pkg/models"
