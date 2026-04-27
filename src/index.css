@@ -2963,15 +2963,6 @@ h3 {
     }
 }
 
-/* Hide Navbar & Footer for focused experience */
-.site-navbar,
-.footer {
-    display: none !important;
-}
-
-main {
-    padding-top: 0 !important;
-}
 
 .join-page-wrapper {
     min-height: 100vh;
