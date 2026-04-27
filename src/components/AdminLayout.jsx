@@ -43,7 +43,7 @@ const AdminLayout = ({ children }) => {
 
     return (
         <div className="dashboard-container">
-            <div className={`mobile-toggle ${isSidebarOpen ? 'd-none' : 'd-flex'}`}>
+            <div className={`mobile-toggle ${isSidebarOpen ? 'd-none' : ''}`}>
                 <div className="d-flex align-items-center gap-3">
                     <img src="/image/logo.png" width="32" alt="Logo" />
                     <span className="fw-bold" style={{ fontFamily: 'Montserrat', letterSpacing: '0.2em', fontSize: '0.8rem' }}>CAKRA</span>
@@ -88,6 +88,22 @@ const AdminLayout = ({ children }) => {
             </aside>
 
             <div className="main-wrapper">
+                <header className="main-header d-none d-lg-flex">
+                    <div>
+                        <h1 className="h5 fw-black mb-1" style={{ letterSpacing: '-0.01em', color: '#fff' }}>
+                            PANEL KENDALI
+                        </h1>
+                        <p className="small mb-0" style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            {date}
+                        </p>
+                    </div>
+                    <div className="d-flex align-items-center gap-4">
+                        <Link to="/" target="_blank" className="btn-accent text-decoration-none">
+                            <i className="bi bi-eye-fill me-2"></i> Kunjungi Situs
+                        </Link>
+                    </div>
+                </header>
+
                 <main className="main-content">
                     <Outlet />
                 </main>

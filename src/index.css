@@ -1230,6 +1230,7 @@ h6 {
 .sidebar-nav {
     padding: 2rem 1.25rem;
     flex: 1;
+    overflow-y: auto;
 }
 
 .nav-link {

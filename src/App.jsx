@@ -35,11 +35,19 @@ function App() {
     const location = useLocation()
     const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname === '/login' || location.pathname === '/join' || location.pathname === '/bergabung'
 
+    useEffect(() => {
+        if (!isDashboard) {
+            document.body.classList.add('layout-overlay-nav')
+        } else {
+            document.body.classList.remove('layout-overlay-nav')
+        }
+    }, [isDashboard])
+
     return (
-        <div className={`app-wrapper ${!isDashboard ? 'layout-overlay-nav' : ''}`}>
+        <div className="app-wrapper">
             <ScrollToTop />
             {!isDashboard && <Navbar />}
-            <main>
+            <main className={isDashboard ? 'p-0' : ''}>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/tentang-kami" element={<About />} />
