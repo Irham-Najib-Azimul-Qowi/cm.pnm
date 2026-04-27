@@ -31,7 +31,7 @@ const About = () => {
         <div className="page-about overflow-hidden">
             <section className="page-hero" style={{ backgroundImage: "linear-gradient(rgba(7, 17, 12, 0.7), rgba(7, 17, 12, 0.7)), url('/image/fotobersejarah2.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="container">
-                    <div className="page-hero__inner text-center">
+                    <div className="page-hero__inner">
                         <span className="page-hero__eyebrow" data-aos="fade-up">
                             <i className="bi bi-info-circle me-2"></i>
                             Jati Diri
@@ -39,7 +39,7 @@ const About = () => {
                         <h1 className="page-hero__title" data-aos="fade-up" data-aos-delay="100">
                             Mengenal<br /><span>Cakra Manggala</span>
                         </h1>
-                        <p className="page-hero__lead mx-auto" data-aos="fade-up" data-aos-delay="200">
+                        <p className="page-hero__lead" data-aos="fade-up" data-aos-delay="200">
                             Wadah pembentukan karakter mahasiswa melalui petualangan dan kepedulian lingkungan yang telah berdiri sejak 2013.
                         </p>
                     </div>
@@ -95,7 +95,7 @@ const About = () => {
                     <div className="row g-4">
                         <div className="col-lg-6" data-aos="fade-up">
                             <div className="premium-card p-5 h-100" style={{ background: 'var(--dark-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                <div style={{ width: '50px', height: '50px', background: 'var(--accent-color)', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', marginBottom: '2rem' }}>
+                                <div style={{ width: '50px', height: '50px', background: 'var(--accent-color)', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', font_size: '1.5rem', marginBottom: '2rem' }}>
                                     <i className="bi bi-eye-fill"></i>
                                 </div>
                                 <h3 className="h2 fw-bold text-white mb-4" style={{ letterSpacing: '-0.02em' }}>Visi</h3>
@@ -154,7 +154,7 @@ const About = () => {
             </section>
 
             {/* Team Section */}
-            <section className="section-shell" style={{ backgroundColor: 'var(--primary-color)', color: '#fff' }}>
+            <section className="section-shell" style={{ backgroundColor: 'var(--primary-color)', color: '#fff', paddingBottom: '10rem' }}>
                 <div className="container">
                     <div className="text-center mb-5" data-aos="fade-up">
                         <span className="section-label" style={{ color: 'var(--accent-color)' }}>Organisasi</span>
@@ -204,6 +204,18 @@ const About = () => {
                                         </div>
                                     </div>
                                 ))}
+                                {loading && (
+                                    <div className="text-center py-5">
+                                        <div className="spinner-border text-accent" role="status">
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                )}
+                                {!loading && pengurus.length === 0 && (
+                                    <div className="text-center py-5 bg-white-10">
+                                        <p className="text-white-50 mb-0">Belum ada data pengurus tersedia.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

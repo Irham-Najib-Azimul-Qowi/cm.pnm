@@ -7,6 +7,7 @@ const Home = () => {
     const [kegiatans, setKegiatans] = useState([])
     const [artikels, setArtikels] = useState([])
     const [loading, setLoading] = useState(true)
+    const [isVideoReady, setIsVideoReady] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,10 +28,14 @@ const Home = () => {
         fetchData()
     }, [])
 
+    const handleVideoPlaying = () => {
+        setIsVideoReady(true)
+    }
+
     return (
         <div className="page-home overflow-hidden">
             {/* Hero Section */}
-            <section className="page-hero home-hero" id="homeHero">
+            <section className={`page-hero home-hero ${isVideoReady ? 'is-video-ready' : ''}`} id="homeHero">
                 <div className="page-hero__media" aria-hidden="true">
                     <div
                         className="page-hero__fallback"
@@ -50,6 +55,8 @@ const Home = () => {
                         muted
                         loop
                         playsInline
+                        onPlaying={handleVideoPlaying}
+                        poster="/image/fotobersejarah2.jpg"
                         style={{
                             position: "absolute",
                             inset: 0,
@@ -57,7 +64,7 @@ const Home = () => {
                             height: "100%",
                             objectFit: "cover",
                             objectPosition: "center bottom",
-                            opacity: 1,
+                            opacity: isVideoReady ? 1 : 0,
                             transition: "opacity 1s ease-in-out"
                         }}
                     >

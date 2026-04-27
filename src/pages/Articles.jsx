@@ -1,42 +1,57 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import AOS from 'aos'
 import { Link, useSearchParams } from 'react-router-dom'
+import AOS from 'aos'
 
 const Articles = () => {
-    const [artikels, setArtikels] = useState([])
-    const [meta, setMeta] = useState({})
-    const [loading, setLoading] = useState(true)
     const [searchParams, setSearchParams] = useSearchParams()
-
-    const search = searchParams.get('search') || ''
-    const page = parseInt(searchParams.get('page') || '1')
-
-    const fetchArticles = async () => {
-        setLoading(true)
-        try {
-            const res = await axios.get(`/api/articles?search=${search}&page=${page}&per_page=9`)
-            setArtikels(res.data.data || [])
-            setMeta(res.data.meta || {})
-        } catch (error) {
-            console.error('Error fetching articles:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
+    const [artikels, setArtikels] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
+    const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1)
+    const [totalPages, setTotalPages] = useState(1)
 
     useEffect(() => {
-        fetchArticles()
-    }, [search, page])
+        const fetchArticles = async () => {
+            setLoading(true)
+            try {
+                const params = new URLSearchParams()
+                if (searchTerm) params.append('search', searchTerm)
+                params.append('page', page.toString())
+                params.append('per_page', '9')
 
-    const handleSearchSubmit = (e) => {
+                const res = await axios.get(`/api/articles?${params.toString()}`)
+                setArtikels(res.data.data || [])
+                setTotalPages(res.data.last_page || 1)
+            } catch (error) {
+                console.error('Error fetching articles:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchArticles()
+    }, [searchParams, page])
+
+    const handleSearch = (e) => {
         e.preventDefault()
-        const term = e.target.search.value
-        setSearchParams({ search: term, page: 1 })
+        setPage(1)
+        const newParams = new URLSearchParams(searchParams)
+        if (searchTerm) newParams.set('search', searchTerm)
+        else newParams.delete('search')
+        newParams.set('page', '1')
+        setSearchParams(newParams)
+    }
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage)
+        const newParams = new URLSearchParams(searchParams)
+        newParams.set('page', newPage.toString())
+        setSearchParams(newParams)
+        window.scrollTo({ top: 300, behavior: 'smooth' })
     }
 
     return (
-        <div className="page-articles overflow-hidden text-white">
+        <div className="page-articles overflow-hidden">
             <section className="page-hero" style={{ backgroundImage: "linear-gradient(rgba(7, 17, 12, 0.7), rgba(7, 17, 12, 0.7)), url('/image/fotobersejarah2.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="container">
                     <div className="page-hero__inner">
@@ -52,29 +67,25 @@ const Articles = () => {
                 </div>
             </section>
 
-            <section className="section-shell" style={{ backgroundColor: 'var(--dark-color)', minHeight: '80vh' }}>
+            <section className="section-shell" style={{ backgroundColor: 'var(--dark-color)', color: '#fff', minHeight: '80vh' }}>
                 <div className="container">
                     {/* Search Bar */}
                     <div className="row justify-content-center mb-5" data-aos="fade-up">
                         <div className="col-lg-7">
-                            <form onSubmit={handleSearchSubmit}>
+                            <form onSubmit={handleSearch}>
                                 <div className="input-group input-group-lg" style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}>
                                     <span className="input-group-text bg-transparent border-0 ps-4">
                                         <i className="bi bi-search" style={{ color: 'var(--accent-color)' }}></i>
                                     </span>
                                     <input
                                         type="text"
-                                        name="search"
                                         className="form-control bg-transparent border-0 text-white py-3 shadow-none"
-                                        defaultValue={search}
                                         placeholder="Cari topik artikel..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                         style={{ fontSize: '1.1rem', letterSpacing: '0.02em' }}
                                     />
-                                    <button
-                                        className="btn px-4"
-                                        type="submit"
-                                        style={{ background: 'var(--accent-color)', color: 'var(--primary-color)', borderRadius: 0, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.85rem' }}
-                                    >
+                                    <button className="btn px-4" type="submit" style={{ background: 'var(--accent-color)', color: 'var(--primary-color)', borderRadius: 0, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.1, fontSize: '0.85rem' }}>
                                         Cari
                                     </button>
                                 </div>
@@ -82,13 +93,7 @@ const Articles = () => {
                         </div>
                     </div>
 
-                    {loading ? (
-                        <div className="text-center py-5">
-                            <div className="spinner-border text-accent" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    ) : artikels.length > 0 ? (
+                    {!loading && artikels.length > 0 ? (
                         <>
                             <div className="row g-4">
                                 {artikels.map((artikel, index) => (
@@ -105,7 +110,7 @@ const Articles = () => {
                                                 </div>
                                                 <h3 className="art-card__title">{artikel.judul}</h3>
                                                 <p className="art-card__text">
-                                                    {artikel.excerpt || (artikel.konten && artikel.konten.substring(0, 110).replace(/<[^>]*>?/gm, ''))}...
+                                                    {artikel.excerpt || (artikel.konten && artikel.konten.substring(0, 110).replace(/<[^>]*>?/gm, ''))}
                                                 </p>
                                                 <div className="art-card__footer">
                                                     <Link to={`/artikel/${artikel.slug}`} className="art-card__link">
@@ -121,34 +126,30 @@ const Articles = () => {
                                 ))}
                             </div>
 
-                            {/* Pagination */}
-                            {meta.last_page > 1 && (
-                                <nav className="d-flex justify-content-center mt-5">
-                                    <ul className="pagination custom-pagination">
-                                        {Array.from({ length: meta.last_page }, (_, i) => i + 1).map(p => (
-                                            <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
-                                                <button
-                                                    className="page-link"
-                                                    onClick={() => setSearchParams({ search, page: p })}
-                                                >
-                                                    {p}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </nav>
+                            {totalPages > 1 && (
+                                <div className="d-flex justify-content-center mt-5 custom-pagination">
+                                    <nav>
+                                        <ul className="pagination">
+                                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                                <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
+                                                    <button className="page-link" onClick={() => handlePageChange(p)}>{p}</button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </nav>
+                                </div>
                             )}
                         </>
                     ) : (
                         <div className="text-center py-5" data-aos="fade-up">
-                            <div style={{ background: 'rgba(255,255,255,0.05)', width: '120px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.05)', width: '120px', height: '120px', border_radius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
                                 <i className="bi bi-search display-3" style={{ color: 'rgba(255,255,255,0.15)' }}></i>
                             </div>
-                            <h3 className="fw-bold">Artikel Tidak Ditemukan</h3>
-                            <p className="text-white-50">Maaf, kami tidak menemukan artikel dengan kata kunci "{search}".</p>
-                            <button onClick={() => setSearchParams({})} className="btn-join-premium mt-4" style={{ padding: '0.8rem 2.5rem', fontSize: '0.85rem' }}>
-                                Reset Pencarian
-                            </button>
+                            <h3 className="fw-bold" style={{ color: '#fff' }}>{loading ? 'Memuat...' : 'Artikel Tidak Ditemukan'}</h3>
+                            <p style={{ color: 'rgba(255,255,255,0.5)' }}>{loading ? 'Harap tunggu sebentar.' : `Maaf, kami tidak menemukan artikel dengan kata kunci "${searchTerm}"`}</p>
+                            {!loading && (
+                                <button onClick={() => { setSearchTerm(''); setPage(1); setSearchParams({}) }} className="btn-join-premium mt-4" style={{ padding: '0.8rem 2.5rem', fontSize: '0.85rem' }}>Reset Pencarian</button>
+                            )}
                         </div>
                     )}
                 </div>

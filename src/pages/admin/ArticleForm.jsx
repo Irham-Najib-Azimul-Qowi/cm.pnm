@@ -18,15 +18,12 @@ const ArticleForm = () => {
         status: 'draft'
     })
     const [loading, setLoading] = useState(false)
+    const [uploading, setUploading] = useState(false)
 
     useEffect(() => {
         if (isEdit) {
             const fetchDetail = async () => {
                 try {
-                    // Note: Detail by ID needed. My current detail endpoint is by slug.
-                    // I need an endpoint for detail by ID for admin.
-                    // I created api/admin/articles/[id]/index.go which handles PUT but not GET.
-                    // I'll update it to handle GET too.
                     const token = localStorage.getItem('token')
                     const res = await axios.get(`/api/admin/articles?id=${id}`, {
                         headers: { Authorization: `Bearer ${token}` }
@@ -39,6 +36,25 @@ const ArticleForm = () => {
             fetchDetail()
         }
     }, [id, isEdit])
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        setUploading(true)
+        const data = new FormData()
+        data.append('file', file)
+
+        try {
+            const res = await axios.post('/api/upload', data)
+            setFormData(prev => ({ ...prev, gambar_utama: res.data.url }))
+        } catch (err) {
+            console.error('Upload failed:', err)
+            alert('Gagal mengunggah gambar.')
+        } finally {
+            setUploading(false)
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -63,8 +79,9 @@ const ArticleForm = () => {
     }
 
     const generateSlug = () => {
+        if (!formData.judul) return
         const slug = formData.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-        setFormData({ ...formData, slug })
+        setFormData(prev => ({ ...prev, slug }))
     }
 
     return (
@@ -141,12 +158,19 @@ const ArticleForm = () => {
                         </div>
 
                         <div className="mb-5">
-                            <label className="form-label small fw-bold text-white-50 text-uppercase">URL Gambar Utama</label>
+                            <label className="form-label small fw-bold text-white-50 text-uppercase">Gambar Utama</label>
+                            <input
+                                type="file"
+                                className="form-control bg-dark text-white rounded-0 mb-2"
+                                onChange={handleFileUpload}
+                                accept="image/*"
+                            />
+                            {uploading && <p className="small text-accent">Mengunggah...</p>}
                             <input
                                 type="text"
-                                className="form-control bg-transparent py-2 text-white rounded-0"
-                                style={{ border: '1px solid rgba(255,255,255,0.1)' }}
-                                placeholder="https://..."
+                                className="form-control bg-transparent py-2 text-white rounded-0 small opacity-50"
+                                style={{ border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.75rem' }}
+                                placeholder="URL Gambar..."
                                 value={formData.gambar_utama}
                                 onChange={(e) => setFormData({ ...formData, gambar_utama: e.target.value })}
                             />
@@ -161,7 +185,7 @@ const ArticleForm = () => {
                             <button
                                 type="submit"
                                 className="btn-join-premium py-3 rounded-0 fw-bold"
-                                disabled={loading}
+                                disabled={loading || uploading}
                             >
                                 {loading ? 'MENYIMPAN...' : 'SIMPAN ARTIKEL'}
                             </button>
