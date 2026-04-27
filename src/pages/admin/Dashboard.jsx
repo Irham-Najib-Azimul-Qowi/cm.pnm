@@ -23,8 +23,8 @@ const Dashboard = () => {
 
                 // Fetch other counts
                 const [regRes, msgRes, kegRes] = await Promise.all([
-                    axios.get('/api/admin/pendaftaran', { headers: { Authorization: `Bearer \${token}` } }),
-                    axios.get('/api/admin/pesan', { headers: { Authorization: `Bearer \${token}` } }),
+                    axios.get('/api/admin/pendaftaran', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('/api/admin/pesan', { headers: { Authorization: `Bearer ${token}` } }),
                     axios.get('/api/kegiatan')
                 ])
 
@@ -85,12 +85,12 @@ const Dashboard = () => {
                 ].map((c, i) => (
                     <div className="col-12 col-md-6 col-xl-3" key={i}>
                         <div className="p-4 h-100" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.05, fontSize: '5rem' }}><i className={`bi \${c.icon}`}></i></div>
+                            <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.05, fontSize: '5rem' }}><i className={`bi ${c.icon}`}></i></div>
                             <span className="small text-uppercase fw-bold text-white-50 d-block mb-3" style={{ letterSpacing: '0.1em' }}>{c.label}</span>
                             <div className="d-flex align-items-baseline gap-3">
                                 <h3 className="h1 fw-bold text-white mb-0">{c.value}</h3>
                                 <span className={i === 3 && c.value > 0 ? "text-danger animate-pulse" : "text-white-50"}>
-                                    <i className={`bi \${c.icon}`}></i>
+                                    <i className={`bi ${c.icon}`}></i>
                                 </span>
                             </div>
                         </div>
@@ -120,7 +120,7 @@ const Dashboard = () => {
                                     />
                                     <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={40}>
                                         {chartData.map((entry, index) => (
-                                            <Cell key={`cell-\${index}`} fill={COLORS[index % COLORS.length]} />
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Bar>
                                 </BarChart>
@@ -137,7 +137,7 @@ const Dashboard = () => {
                             {recentSubmissions.length > 0 ? recentSubmissions.map((sub, i) => (
                                 <div key={i} className="d-flex align-items-center gap-4">
                                     <div className="flex-shrink-0" style={{ width: '40px', height: '40px', background: sub.type === 'PENDAFTRAN' ? 'rgba(33, 150, 243, 0.1)' : 'rgba(255, 82, 82, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: sub.type === 'PENDAFTRAN' ? '#2196F3' : '#FF5252' }}>
-                                        <i className={`bi \${sub.type === 'PENDAFTRAN' ? 'bi-person-plus' : 'bi-chat-dots'}`}></i>
+                                        <i className={`bi ${sub.type === 'PENDAFTRAN' ? 'bi-person-plus' : 'bi-chat-dots'}`}></i>
                                     </div>
                                     <div className="flex-grow-1 overflow-hidden">
                                         <div className="d-flex justify-content-between">

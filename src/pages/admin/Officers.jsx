@@ -60,7 +60,7 @@ const OfficersManagement = () => {
                                 <h4 className="fw-bold text-white mb-1 text-truncate">{o.nama}</h4>
                                 <p className="small text-accent mb-2 text-uppercase fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>{o.jabatan}</p>
                                 <div className="d-flex gap-2">
-                                    <Link to={`/dashboard/officers/edit/\${o.id}`} className="small text-white-50 text-decoration-none border-bottom border-secondary">Edit</Link>
+                                    <Link to={`/dashboard/officers/edit/${o.id}`} className="small text-white-50 text-decoration-none border-bottom border-secondary">Edit</Link>
                                     <button onClick={() => handleDelete(o.id)} className="small text-danger border-0 bg-transparent p-0 text-decoration-none border-bottom border-danger">Hapus</button>
                                 </div>
                             </div>

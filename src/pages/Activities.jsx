@@ -20,7 +20,7 @@ const Activities = () => {
             if (filters.tahun) params.append('year', filters.tahun)
             if (filters.sifat) params.append('sifat', filters.sifat)
 
-            const res = await axios.get(`/api/kegiatan?\${params.toString()}`)
+            const res = await axios.get(`/api/kegiatan?${params.toString()}`)
             setKegiatans(res.data || [])
         } catch (error) {
             console.error('Error fetching activities:', error)

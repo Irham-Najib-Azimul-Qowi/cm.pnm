@@ -79,9 +79,9 @@ const Join = () => {
 
                     <div className="join-stepper d-grid gap-3 mb-5" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
                         {steps.map((s, i) => (
-                            <div key={i} className={`join-step text-center \${step === i + 1 ? 'is-active' : step > i + 1 ? 'is-complete' : ''}`}>
+                            <div key={i} className={`join-step text-center ${step === i + 1 ? 'is-active' : step > i + 1 ? 'is-complete' : ''}`}>
                                 <div className="join-step__icon-box mx-auto mb-2">
-                                    <i className={`bi \${s.icon}`}></i>
+                                    <i className={`bi ${s.icon}`}></i>
                                 </div>
                                 <span className="join-step__label small text-uppercase fw-bold d-block">{s.label}</span>
                             </div>

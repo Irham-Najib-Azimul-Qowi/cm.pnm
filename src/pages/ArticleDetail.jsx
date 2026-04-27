@@ -94,13 +94,13 @@ const ArticleDetail = () => {
                                 <div className="article-share-bar">
                                     <h2>Bagikan Tulisan</h2>
                                     <div className="article-share-actions">
-                                        <a href={`https://www.facebook.com/sharer/sharer.php?u=\${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="article-share-action">
+                                        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="article-share-action">
                                             <i className="bi bi-facebook"></i> Facebook
                                         </a>
-                                        <a href={`https://twitter.com/intent/tweet?url=\${encodeURIComponent(window.location.href)}&text=\${encodeURIComponent(artikel.judul)}`} target="_blank" rel="noopener noreferrer" className="article-share-action">
+                                        <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(artikel.judul)}`} target="_blank" rel="noopener noreferrer" className="article-share-action">
                                             <i className="bi bi-twitter-x"></i> Twitter
                                         </a>
-                                        <a href={`https://wa.me/?text=\${encodeURIComponent(artikel.judul + ' - ' + window.location.href)}`} target="_blank" rel="noopener noreferrer" className="article-share-action">
+                                        <a href={`https://wa.me/?text=${encodeURIComponent(artikel.judul + ' - ' + window.location.href)}`} target="_blank" rel="noopener noreferrer" className="article-share-action">
                                             <i className="bi bi-whatsapp"></i> WhatsApp
                                         </a>
                                     </div>
@@ -114,7 +114,7 @@ const ArticleDetail = () => {
                                     <h2>Lainnya</h2>
                                     <div className="article-related-list">
                                         {related.map(rel => (
-                                            <Link to={`/artikel/\${rel.slug}`} className="article-related-item" key={rel.id}>
+                                            <Link to={`/artikel/${rel.slug}`} className="article-related-item" key={rel.id}>
                                                 <div className="article-related-item__media">
                                                     <img src={rel.gambar_utama || '/image/fotobersejarah2.jpg'} alt={rel.judul} />
                                                 </div>

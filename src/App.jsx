@@ -33,7 +33,7 @@ function ScrollToTop() {
 
 function App() {
     const location = useLocation()
-    const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname === '/login' || location.pathname === '/join'
+    const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname === '/login' || location.pathname === '/join' || location.pathname === '/bergabung'
 
     return (
         <div className="app-wrapper">
@@ -48,6 +48,7 @@ function App() {
                     <Route path="/artikel/:slug" element={<ArticleDetail />} />
                     <Route path="/kontak" element={<Contact />} />
                     <Route path="/join" element={<Join />} />
+                    <Route path="/bergabung" element={<Join />} />
                     <Route path="/login" element={<Login />} />
 
                     {/* Admin Protected Routes */}

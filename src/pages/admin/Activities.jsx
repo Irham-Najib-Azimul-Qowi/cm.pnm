@@ -81,14 +81,14 @@ const ActivitiesManagement = () => {
                                     </td>
                                     <td className="fw-bold">{keg.tahun}</td>
                                     <td>
-                                        <span className={`px-2 py-1 small fw-bold \${keg.sifat === 'internal' ? 'text-info' : 'text-accent'}`}>
+                                        <span className={`px-2 py-1 small fw-bold ${keg.sifat === 'internal' ? 'text-info' : 'text-accent'}`}>
                                             {keg.sifat.toUpperCase()}
                                         </span>
                                     </td>
                                     <td className="small text-white-50">{new Date(keg.tanggal_pelaksanaan).toLocaleDateString('id-ID')}</td>
                                     <td className="pe-4 text-end">
                                         <div className="d-flex justify-content-end gap-2">
-                                            <Link to={`/dashboard/activities/edit/\${keg.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2">
+                                            <Link to={`/dashboard/activities/edit/${keg.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2">
                                                 <i className="bi bi-pencil-fill"></i>
                                             </Link>
                                             <button onClick={() => handleDelete(keg.id)} className="btn btn-sm btn-outline-danger rounded-0 border-0 p-2">

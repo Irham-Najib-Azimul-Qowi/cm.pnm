@@ -15,7 +15,7 @@ const Articles = () => {
     const fetchArticles = async () => {
         setLoading(true)
         try {
-            const res = await axios.get(`/api/articles?search=\${search}&page=\${page}&per_page=9`)
+            const res = await axios.get(`/api/articles?search=${search}&page=${page}&per_page=9`)
             setArtikels(res.data.data || [])
             setMeta(res.data.meta || {})
         } catch (error) {
@@ -108,7 +108,7 @@ const Articles = () => {
                                                     {artikel.excerpt || (artikel.konten && artikel.konten.substring(0, 110).replace(/<[^>]*>?/gm, ''))}...
                                                 </p>
                                                 <div className="art-card__footer">
-                                                    <Link to={`/artikel/\${artikel.slug}`} className="art-card__link">
+                                                    <Link to={`/artikel/${artikel.slug}`} className="art-card__link">
                                                         Baca Lanjut <i className="bi bi-chevron-right"></i>
                                                     </Link>
                                                     <div className="art-card__views">
@@ -126,7 +126,7 @@ const Articles = () => {
                                 <nav className="d-flex justify-content-center mt-5">
                                     <ul className="pagination custom-pagination">
                                         {Array.from({ length: meta.last_page }, (_, i) => i + 1).map(p => (
-                                            <li key={p} className={`page-item \${p === page ? 'active' : ''}`}>
+                                            <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
                                                 <button
                                                     className="page-link"
                                                     onClick={() => setSearchParams({ search, page: p })}

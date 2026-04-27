@@ -58,8 +58,8 @@ const Footer = () => {
                             <h5 className="footer-title">Stay Connected</h5>
                             <div className="footer-social">
                                 <a href="#" aria-label="Instagram"><i className="bi bi-instagram"></i></a>
-                                <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                                <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                                <a href="#" aria-label="Facebook"><i className="bi bi-facebook"></i></a>
+                                <a href="#" aria-label="YouTube"><i className="bi bi-youtube"></i></a>
                             </div>
                             <p className="footer-address">Sekretariat UKM Pecinta Alam Cakra Manggala<br />Politeknik Negeri Madiun<br />Madiun, Jawa Timur</p>
                             <Link to="/kontak" className="footer-action">

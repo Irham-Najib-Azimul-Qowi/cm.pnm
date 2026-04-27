@@ -10,7 +10,7 @@ const MessagesManagement = () => {
         try {
             const token = localStorage.getItem('token')
             const res = await axios.get('/api/admin/pesan', {
-                headers: { Authorization: `Bearer \${token}` }
+                headers: { Authorization: `Bearer ${token}` }
             })
             setMessages(res.data || [])
         } catch (error) {
@@ -48,7 +48,7 @@ const MessagesManagement = () => {
                     <div className="col-12 text-center py-5"><div className="spinner-border text-accent"></div></div>
                 ) : messages.length > 0 ? messages.map(m => (
                     <div className="col-12" key={m.id}>
-                        <div className={`p-4 \${m.is_read ? 'opacity-50' : 'border-start border-accent border-4'}`} style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div className={`p-4 ${m.is_read ? 'opacity-50' : 'border-start border-accent border-4'}`} style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
                             <div className="d-flex justify-content-between align-items-start mb-3">
                                 <div>
                                     <h4 className="h6 fw-bold text-white mb-1">{m.subjek}</h4>

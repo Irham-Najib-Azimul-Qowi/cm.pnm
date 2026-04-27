@@ -10,7 +10,7 @@ const RegistrationsManagement = () => {
         try {
             const token = localStorage.getItem('token')
             const res = await axios.get('/api/admin/pendaftaran', {
-                headers: { Authorization: `Bearer \${token}` }
+                headers: { Authorization: `Bearer ${token}` }
             })
             setRegs(res.data || [])
         } catch (error) {
@@ -81,7 +81,7 @@ const RegistrationsManagement = () => {
                                         <div className="small text-white-50">{r.jurusan} - {r.program_studi}</div>
                                     </td>
                                     <td>
-                                        <span className={`px-2 py-1 small fw-bold \${r.status === 'approved' ? 'text-success' : r.status === 'rejected' ? 'text-danger' : 'text-warning'}`}>
+                                        <span className={`px-2 py-1 small fw-bold ${r.status === 'approved' ? 'text-success' : r.status === 'rejected' ? 'text-danger' : 'text-warning'}`}>
                                             {r.status.toUpperCase()}
                                         </span>
                                     </td>

@@ -61,7 +61,7 @@ const ArticlesManagement = () => {
                         <div className="p-4" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <span className="small text-uppercase fw-bold text-white-50">{s.label}</span>
-                                <i className={`bi \${s.icon} text-accent`}></i>
+                                <i className={`bi ${s.icon} text-accent`}></i>
                             </div>
                             <h3 className="h2 fw-bold text-white mb-0">{s.value}</h3>
                         </div>
@@ -103,7 +103,7 @@ const ArticlesManagement = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className={`px-3 py-1 small fw-bold \${art.status === 'published' ? 'bg-success bg-opacity-10 text-success' : 'bg-warning bg-opacity-10 text-warning'}`}>
+                                        <span className={`px-3 py-1 small fw-bold ${art.status === 'published' ? 'bg-success bg-opacity-10 text-success' : 'bg-warning bg-opacity-10 text-warning'}`}>
                                             {art.status.toUpperCase()}
                                         </span>
                                     </td>
@@ -111,7 +111,7 @@ const ArticlesManagement = () => {
                                     <td className="small text-white-50">{new Date(art.created_at).toLocaleDateString('id-ID')}</td>
                                     <td className="pe-4 text-end">
                                         <div className="d-flex justify-content-end gap-2">
-                                            <Link to={`/dashboard/articles/edit/\${art.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2" title="Edit">
+                                            <Link to={`/dashboard/articles/edit/${art.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2" title="Edit">
                                                 <i className="bi bi-pencil-fill"></i>
                                             </Link>
                                             <button onClick={() => handleDelete(art.id)} className="btn btn-sm btn-outline-danger rounded-0 border-0 p-2" title="Hapus">
