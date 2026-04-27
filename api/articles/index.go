@@ -16,7 +16,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	database := db.GetDB()
-	
+
 	slug := r.URL.Query().Get("slug")
 	if slug != "" {
 		var artikel models.Artikel
@@ -32,7 +32,7 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	var artikels []models.Artikel
 
 	query := database.Preload("User").Order("created_at desc")
-	
+
 	search := r.URL.Query().Get("search")
 	if search != "" {
 		query = query.Where("judul ILIKE ?", "%"+search+"%")
@@ -46,13 +46,17 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
-	if page == 0 { page = 1 }
+	if page == 0 {
+		page = 1
+	}
 	perPage, _ := strconv.Atoi(r.URL.Query().Get("per_page"))
-	if perPage == 0 { perPage = 6 }
-	
+	if perPage == 0 {
+		perPage = 6
+	}
+
 	var total int64
 	query.Model(&models.Artikel{}).Count(&total)
-	
+
 	query.Offset((page - 1) * perPage).Limit(perPage).Find(&artikels)
 
 	// Admin stats included for dashboard
@@ -68,7 +72,7 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 		},
 		"stats": map[string]interface{}{
 			"total_views": totalViews,
-			"total": total,
+			"total":       total,
 		},
 	})
 }

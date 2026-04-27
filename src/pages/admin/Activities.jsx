@@ -42,7 +42,7 @@ const ActivitiesManagement = () => {
                     <h1 className="h2 fw-bold text-white mb-1">Manajemen Kegiatan</h1>
                     <p className="text-white-50 small mb-0">Arsip rekam jejak dan dokumentasi UKM.</p>
                 </div>
-                <Link to="/dashboard/activities/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
+                <Link to="/dashboard/kegiatan/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
                     <i className="bi bi-plus-lg me-2"></i> TAMBAH KEGIATAN BARU
                 </Link>
             </div>
@@ -88,7 +88,7 @@ const ActivitiesManagement = () => {
                                     <td className="small text-white-50">{new Date(keg.tanggal_pelaksanaan).toLocaleDateString('id-ID')}</td>
                                     <td className="pe-4 text-end">
                                         <div className="d-flex justify-content-end gap-2">
-                                            <Link to={`/dashboard/activities/edit/${keg.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2">
+                                            <Link to={`/dashboard/kegiatan/edit/${keg.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2">
                                                 <i className="bi bi-pencil-fill"></i>
                                             </Link>
                                             <button onClick={() => handleDelete(keg.id)} className="btn btn-sm btn-outline-danger rounded-0 border-0 p-2">

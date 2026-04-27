@@ -21,6 +21,6 @@ func pengurusHandler(w http.ResponseWriter, r *http.Request) {
 
 	database := db.GetDB()
 	var pengurus []models.Pengurus
-	database.Order("urutan asc").Find(&pengurus)
+	database.Where("status = ? OR status = ?", "active", "").Order("urutan asc").Find(&pengurus)
 	json.NewEncoder(w).Encode(pengurus)
 }

@@ -58,7 +58,7 @@ const ActivityForm = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             }
-            navigate('/dashboard/activities')
+            navigate('/dashboard/kegiatan')
         } catch (error) {
             alert('Gagal menyimpan kegiatan: ' + (error.response?.data?.error || error.message))
         } finally {
@@ -189,7 +189,7 @@ const ActivityForm = () => {
                             <button
                                 type="button"
                                 className="btn btn-outline-light rounded-0 py-3 small fw-bold opacity-50"
-                                onClick={() => navigate('/dashboard/activities')}
+                                onClick={() => navigate('/dashboard/kegiatan')}
                             >
                                 BATAL
                             </button>

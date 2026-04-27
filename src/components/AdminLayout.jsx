@@ -27,11 +27,11 @@ const AdminLayout = ({ children }) => {
 
     const sidebarLinks = [
         { name: 'Ikhtisar', path: '/dashboard', icon: 'bi-speedometer2' },
-        { name: 'Artikel', path: '/dashboard/articles', icon: 'bi-journal-richtext' },
-        { name: 'Kegiatan', path: '/dashboard/activities', icon: 'bi-calendar-event' },
-        { name: 'Pengurus', path: '/dashboard/officers', icon: 'bi-people' },
-        { name: 'Pendaftar', path: '/dashboard/registrations', icon: 'bi-person-plus' },
-        { name: 'Pesan', path: '/dashboard/messages', icon: 'bi-chat-left-dots' },
+        { name: 'Artikel', path: '/dashboard/artikel', icon: 'bi-journal-richtext' },
+        { name: 'Kegiatan', path: '/dashboard/kegiatan', icon: 'bi-calendar-event' },
+        { name: 'Pengurus', path: '/dashboard/pengurus', icon: 'bi-people' },
+        { name: 'Pendaftar', path: '/dashboard/pendaftar', icon: 'bi-person-plus' },
+        { name: 'Pesan', path: '/dashboard/pesan', icon: 'bi-chat-left-dots' },
     ]
 
     const date = new Date().toLocaleDateString('id-ID', {
@@ -62,7 +62,7 @@ const AdminLayout = ({ children }) => {
                         <Link
                             key={link.path}
                             to={link.path}
-                            className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                            className={`nav-link ${location.pathname === link.path || location.pathname.startsWith(`${link.path}/`) ? 'active' : ''}`}
                         >
                             <i className={`bi ${link.icon}`}></i> {link.name}
                         </Link>

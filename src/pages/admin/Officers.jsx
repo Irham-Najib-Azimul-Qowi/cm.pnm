@@ -42,7 +42,7 @@ const OfficersManagement = () => {
                     <h1 className="h2 fw-bold text-white mb-1">Struktur Pengurus</h1>
                     <p className="text-white-50 small mb-0">Kelola daftar pengurus aktif UKM Cakra Manggala.</p>
                 </div>
-                <Link to="/dashboard/officers/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
+                <Link to="/dashboard/pengurus/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
                     <i className="bi bi-person-plus-fill me-2"></i> TAMBAH PENGURUS
                 </Link>
             </div>
@@ -60,7 +60,7 @@ const OfficersManagement = () => {
                                 <h4 className="fw-bold text-white mb-1 text-truncate">{o.nama}</h4>
                                 <p className="small text-accent mb-2 text-uppercase fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>{o.jabatan}</p>
                                 <div className="d-flex gap-2">
-                                    <Link to={`/dashboard/officers/edit/${o.id}`} className="small text-white-50 text-decoration-none border-bottom border-secondary">Edit</Link>
+                                    <Link to={`/dashboard/pengurus/edit/${o.id}`} className="small text-white-50 text-decoration-none border-bottom border-secondary">Edit</Link>
                                     <button onClick={() => handleDelete(o.id)} className="small text-danger border-0 bg-transparent p-0 text-decoration-none border-bottom border-danger">Hapus</button>
                                 </div>
                             </div>

@@ -22,12 +22,12 @@ func kegiatanHandler(w http.ResponseWriter, r *http.Request) {
 	database := db.GetDB()
 	var kegiatans []models.Kegiatan
 	query := database.Preload("User").Order("tanggal_pelaksanaan desc")
-	
+
 	year := r.URL.Query().Get("tahun")
 	if year != "" {
 		query = query.Where("tahun = ?", year)
 	}
-	
+
 	sifat := r.URL.Query().Get("sifat")
 	if sifat != "" {
 		query = query.Where("sifat = ?", sifat)

@@ -152,7 +152,7 @@ const Dashboard = () => {
                             )}
                         </div>
                         <div className="mt-5 pt-4 border-top border-secondary border-opacity-25">
-                            <Link to="/dashboard/registrations" className="text-accent text-decoration-none small fw-bold text-uppercase d-flex align-items-center gap-2">
+                            <Link to="/dashboard/pendaftar" className="text-accent text-decoration-none small fw-bold text-uppercase d-flex align-items-center gap-2">
                                 Semua Aktivitas <i className="bi bi-arrow-right"></i>
                             </Link>
                         </div>

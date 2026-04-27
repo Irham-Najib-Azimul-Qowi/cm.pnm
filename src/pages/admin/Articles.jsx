@@ -44,7 +44,7 @@ const ArticlesManagement = () => {
                     <h1 className="h2 fw-bold text-white mb-1">Manajemen Artikel</h1>
                     <p className="text-white-50 small mb-0">Kelola publikasi, draf, dan konten edukasi.</p>
                 </div>
-                <Link to="/dashboard/articles/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
+                <Link to="/dashboard/artikel/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
                     <i className="bi bi-plus-lg me-2"></i> TULIS ARTIKEL BARU
                 </Link>
             </div>
@@ -111,7 +111,7 @@ const ArticlesManagement = () => {
                                     <td className="small text-white-50">{new Date(art.created_at).toLocaleDateString('id-ID')}</td>
                                     <td className="pe-4 text-end">
                                         <div className="d-flex justify-content-end gap-2">
-                                            <Link to={`/dashboard/articles/edit/${art.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2" title="Edit">
+                                            <Link to={`/dashboard/artikel/edit/${art.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2" title="Edit">
                                                 <i className="bi bi-pencil-fill"></i>
                                             </Link>
                                             <button onClick={() => handleDelete(art.id)} className="btn btn-sm btn-outline-danger rounded-0 border-0 p-2" title="Hapus">

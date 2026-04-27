@@ -54,6 +54,17 @@ function App() {
                     {/* Admin Protected Routes */}
                     <Route path="/dashboard" element={<AdminLayout />}>
                         <Route index element={<Dashboard />} />
+                        <Route path="artikel" element={<ArticlesManagement />} />
+                        <Route path="artikel/create" element={<ArticleForm />} />
+                        <Route path="artikel/edit/:id" element={<ArticleForm />} />
+                        <Route path="kegiatan" element={<ActivitiesManagement />} />
+                        <Route path="kegiatan/create" element={<ActivityForm />} />
+                        <Route path="kegiatan/edit/:id" element={<ActivityForm />} />
+                        <Route path="pendaftar" element={<RegistrationsManagement />} />
+                        <Route path="pesan" element={<MessagesManagement />} />
+                        <Route path="pengurus" element={<OfficersManagement />} />
+                        <Route path="pengurus/create" element={<OfficerForm />} />
+                        <Route path="pengurus/edit/:id" element={<OfficerForm />} />
                         <Route path="articles" element={<ArticlesManagement />} />
                         <Route path="articles/create" element={<ArticleForm />} />
                         <Route path="articles/edit/:id" element={<ArticleForm />} />

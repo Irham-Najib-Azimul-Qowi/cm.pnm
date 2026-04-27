@@ -10,8 +10,11 @@ const OfficerForm = () => {
     const [formData, setFormData] = useState({
         nama: '',
         jabatan: '',
+        prodi_semester: '',
+        instagram_url: '',
         foto: '',
-        urutan: 0
+        urutan: 0,
+        status: 'active'
     })
     const [loading, setLoading] = useState(false)
 
@@ -51,7 +54,7 @@ const OfficerForm = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             }
-            navigate('/dashboard/officers')
+            navigate('/dashboard/pengurus')
         } catch (error) {
             alert('Gagal menyimpan data')
         } finally {
@@ -100,6 +103,39 @@ const OfficerForm = () => {
                         onChange={(e) => setFormData({ ...formData, urutan: e.target.value })}
                     />
                 </div>
+                <div className="mb-4">
+                    <label className="form-label small fw-bold text-white-50 text-uppercase">Prodi / Semester</label>
+                    <input
+                        type="text"
+                        className="form-control bg-transparent py-3 text-white rounded-0"
+                        style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+                        value={formData.prodi_semester || ''}
+                        onChange={(e) => setFormData({ ...formData, prodi_semester: e.target.value })}
+                        placeholder="Contoh: TI / Semester 4"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="form-label small fw-bold text-white-50 text-uppercase">Instagram URL</label>
+                    <input
+                        type="url"
+                        className="form-control bg-transparent py-3 text-white rounded-0"
+                        style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+                        value={formData.instagram_url || ''}
+                        onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
+                        placeholder="https://instagram.com/username"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="form-label small fw-bold text-white-50 text-uppercase">Status</label>
+                    <select
+                        className="form-select bg-dark text-white rounded-0 py-3"
+                        value={formData.status || 'active'}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    >
+                        <option value="active">ACTIVE</option>
+                        <option value="inactive">INACTIVE</option>
+                    </select>
+                </div>
                 <div className="mb-5">
                     <label className="form-label small fw-bold text-white-50 text-uppercase">URL Foto Profil</label>
                     <input
@@ -116,7 +152,7 @@ const OfficerForm = () => {
                     <button type="submit" className="btn-join-premium py-3 rounded-0 fw-bold" disabled={loading}>
                         {loading ? 'MENYIMPAN...' : 'SIMPAN DATA'}
                     </button>
-                    <button type="button" className="btn btn-outline-light rounded-0 py-3 small fw-bold opacity-50" onClick={() => navigate('/dashboard/officers')}>BATAL</button>
+                    <button type="button" className="btn btn-outline-light rounded-0 py-3 small fw-bold opacity-50" onClick={() => navigate('/dashboard/pengurus')}>BATAL</button>
                 </div>
             </form>
         </div>

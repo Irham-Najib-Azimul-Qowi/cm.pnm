@@ -54,7 +54,7 @@ const ArticleForm = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             }
-            navigate('/dashboard/articles')
+            navigate('/dashboard/artikel')
         } catch (error) {
             alert('Gagal menyimpan artikel: ' + (error.response?.data?.error || error.message))
         } finally {
@@ -168,7 +168,7 @@ const ArticleForm = () => {
                             <button
                                 type="button"
                                 className="btn btn-outline-light rounded-0 py-3 small fw-bold opacity-50"
-                                onClick={() => navigate('/dashboard/articles')}
+                                onClick={() => navigate('/dashboard/artikel')}
                             >
                                 BATAL
                             </button>

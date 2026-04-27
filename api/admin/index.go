@@ -155,6 +155,9 @@ func adminPengurusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		var o models.Pengurus
 		json.NewDecoder(r.Body).Decode(&o)
+		if o.Status == "" {
+			o.Status = "active"
+		}
 		database.Create(&o)
 		json.NewEncoder(w).Encode(o)
 		return

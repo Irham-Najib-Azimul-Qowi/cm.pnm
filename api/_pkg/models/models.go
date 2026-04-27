@@ -15,6 +15,10 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+func (User) TableName() string {
+	return "users"
+}
+
 type Artikel struct {
 	ID          uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	Judul       string    `json:"judul"`
@@ -28,6 +32,10 @@ type Artikel struct {
 	User        User      `json:"user"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+func (Artikel) TableName() string {
+	return "artikels"
 }
 
 type Kegiatan struct {
@@ -46,16 +54,31 @@ type Kegiatan struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 }
 
+func (Kegiatan) TableName() string {
+	return "kegiatans"
+}
+
 type Pendaftaran struct {
-	ID           uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	NamaLengkap  string    `json:"nama_lengkap"`
-	NIM          string    `json:"nim"`
-	Jurusan      string    `json:"jurusan"`
-	ProgramStudi string    `json:"program_studi"`
-	NoHP         string    `json:"no_hp"`
-	Status       string    `json:"status"`
-	IsApproved   bool      `json:"is_approved"`
-	CreatedAt    time.Time `json:"created_at"`
+	ID                          uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	NamaLengkap                 string    `json:"nama_lengkap"`
+	NIM                         string    `json:"nim"`
+	Jurusan                     string    `json:"jurusan"`
+	ProgramStudi                string    `json:"program_studi"`
+	JenisKelamin                string    `json:"jenis_kelamin"`
+	TempatLahir                 string    `json:"tempat_lahir"`
+	TanggalLahir                string    `json:"tanggal_lahir"`
+	NoHP                        string    `json:"no_hp"`
+	Alamat                      string    `json:"alamat"`
+	OrganisasiYangPernahDiikuti string    `json:"organisasi_yang_pernah_diikuti"`
+	AlasanBergabung             string    `json:"alasan_bergabung"`
+	FotoDiri                    string    `json:"foto_diri"`
+	Status                      string    `json:"status"`
+	IsApproved                  bool      `json:"is_approved"`
+	CreatedAt                   time.Time `json:"created_at"`
+}
+
+func (Pendaftaran) TableName() string {
+	return "pendaftaran"
 }
 
 type Pesan struct {
@@ -68,10 +91,21 @@ type Pesan struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+func (Pesan) TableName() string {
+	return "pesans"
+}
+
 type Pengurus struct {
-	ID      uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	Nama    string    `json:"nama"`
-	Jabatan string    `json:"jabatan"`
-	Foto    string    `json:"foto"`
-	Urutan  int       `json:"urutan"`
+	ID            uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
+	Nama          string    `json:"nama"`
+	Jabatan       string    `json:"jabatan"`
+	ProdiSemester string    `json:"prodi_semester"`
+	InstagramURL  string    `json:"instagram_url"`
+	Foto          string    `json:"foto"`
+	Urutan        int       `json:"urutan"`
+	Status        string    `json:"status"`
+}
+
+func (Pengurus) TableName() string {
+	return "penguruses"
 }
