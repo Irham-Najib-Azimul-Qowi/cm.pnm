@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom'
 
 const AdminLayout = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -105,7 +105,7 @@ const AdminLayout = ({ children }) => {
                 </header>
 
                 <main className="main-content">
-                    {children}
+                    <Outlet />
                 </main>
             </div>
 
