@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"cakra-manggala-api/api/_pkg/auth"
 	"cakra-manggala-api/api/_pkg/db"
@@ -12,7 +13,27 @@ import (
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	middleware.Recover(middleware.CORS(middleware.JSONResponse(loginHandler)))(w, r)
+	middleware.Recover(middleware.CORS(middleware.JSONResponse(authHandler)))(w, r)
+}
+
+func authHandler(w http.ResponseWriter, r *http.Request) {
+	switch routeSegment(r, "/api/auth") {
+	case "login":
+		loginHandler(w, r)
+	case "me":
+		meHandler(w, r)
+	default:
+		w.WriteHeader(http.StatusNotFound)
+	}
+}
+
+func routeSegment(r *http.Request, prefix string) string {
+	if route := strings.Trim(r.URL.Query().Get("route"), "/"); route != "" {
+		return route
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, prefix)
+	return strings.Trim(path, "/")
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -51,4 +72,24 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 		"user":  user,
 	})
+}
+
+func meHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	authHeader := r.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	claims, err := auth.ValidateToken(tokenString)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	database := db.GetDB()
+	var user models.User
+	database.First(&user, claims.UserID)
+	json.NewEncoder(w).Encode(user)
 }
