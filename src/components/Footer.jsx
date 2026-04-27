@@ -1,7 +1,22 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const Footer = () => {
+    const [latestActivities, setLatestActivities] = useState([])
+
+    useEffect(() => {
+        const fetchFooterData = async () => {
+            try {
+                const res = await axios.get('/api/kegiatan?limit=2')
+                setLatestActivities(res.data || [])
+            } catch (err) {
+                console.error('Failed to load footer activities:', err)
+            }
+        }
+        fetchFooterData()
+    }, [])
+
     return (
         <footer className="footer" data-footer-reveal>
             <div className="container">
@@ -35,20 +50,35 @@ const Footer = () => {
 
                     <div className="col-12 col-md-6 col-lg-3">
                         <div className="footer-column" data-footer-item>
-                            <h5 className="footer-title">Latest Updates</h5>
+                            <h5 className="footer-title">Latest Activities</h5>
                             <ul className="footer-list">
-                                <li>
-                                    <Link to="/kegiatan">
-                                        <span className="footer-list-title">Lihat arsip kegiatan</span>
-                                        <span className="footer-list-date">Dokumentasi kegiatan dan aktivitas lapangan terbaru.</span>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/artikel">
-                                        <span className="footer-list-title">Buka halaman artikel</span>
-                                        <span className="footer-list-date">Update artikel, catatan perjalanan, dan laporan kegiatan.</span>
-                                    </Link>
-                                </li>
+                                {latestActivities.length > 0 ? (
+                                    latestActivities.map(activity => (
+                                        <li key={activity.id}>
+                                            <Link to="/kegiatan">
+                                                <span className="footer-list-title">{activity.judul_kegiatan}</span>
+                                                <span className="footer-list-date">
+                                                    {new Date(activity.tanggal_pelaksanaan).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })} · {activity.tempat}
+                                                </span>
+                                            </Link>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <>
+                                        <li>
+                                            <Link to="/kegiatan">
+                                                <span className="footer-list-title">Lihat arsip kegiatan</span>
+                                                <span className="footer-list-date">Dokumentasi kegiatan dan aktivitas lapangan terbaru.</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link to="/artikel">
+                                                <span className="footer-list-title">Buka halaman artikel</span>
+                                                <span className="footer-list-date">Update artikel, catatan perjalanan, dan laporan kegiatan.</span>
+                                            </Link>
+                                        </li>
+                                    </>
+                                )}
                             </ul>
                         </div>
                     </div>

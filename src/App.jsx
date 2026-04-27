@@ -36,7 +36,7 @@ function App() {
     const isDashboard = location.pathname.startsWith('/dashboard') || location.pathname === '/login' || location.pathname === '/join' || location.pathname === '/bergabung'
 
     return (
-        <div className="app-wrapper">
+        <div className={`app-wrapper ${!isDashboard ? 'layout-overlay-nav' : ''}`}>
             <ScrollToTop />
             {!isDashboard && <Navbar />}
             <main>
