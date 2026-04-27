@@ -15,6 +15,21 @@ const Footer = () => {
             }
         }
         fetchFooterData()
+
+        const footerEl = document.querySelector('[data-footer-reveal]')
+        if (footerEl) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        footerEl.classList.add('is-visible')
+                        observer.disconnect()
+                    }
+                })
+            }, { threshold: 0.1 })
+            observer.observe(footerEl)
+
+            return () => observer.disconnect()
+        }
     }, [])
 
     return (
