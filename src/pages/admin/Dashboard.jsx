@@ -1,48 +1,38 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        articles: 0,
-        activities: 0,
-        members: 0,
-        messages: 0,
-        views: 0
+        total_pendaftar: 0,
+        artikel_bulan_ini: 0,
+        kegiatan_aktif: 0,
+        pesan_baru: 0
     })
-    const [recentSubmissions, setRecentSubmissions] = useState([])
+    const [recentPendaftar, setRecentPendaftar] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const token = localStorage.getItem('token')
-                const res = await axios.get('/api/articles?per_page=1') // Get stats from articles endpoint
-                const artStats = res.data.stats || {}
-
-                // Fetch other counts
-                const [regRes, msgRes, kegRes] = await Promise.all([
+                const [artRes, regRes, msgRes, kegRes] = await Promise.all([
+                    axios.get('/api/articles?per_page=1'),
                     axios.get('/api/admin/pendaftaran', { headers: { Authorization: `Bearer ${token}` } }),
                     axios.get('/api/admin/pesan', { headers: { Authorization: `Bearer ${token}` } }),
                     axios.get('/api/kegiatan')
                 ])
 
+                const pendaftars = regRes.data || []
+
                 setStats({
-                    articles: artStats.total || 0,
-                    activities: kegRes.data?.length || 0,
-                    members: regRes.data?.filter(r => r.status === 'approved').length || 0,
-                    messages: msgRes.data?.filter(m => !m.is_read).length || 0,
-                    views: artStats.total_views || 0
+                    total_pendaftar: pendaftars.length,
+                    artikel_bulan_ini: artRes.data.stats?.total || 0,
+                    kegiatan_aktif: kegRes.data?.length || 0,
+                    pesan_baru: msgRes.data?.filter(m => !m.is_read).length || 0
                 })
 
-                // Combined recent list
-                const combined = [
-                    ...(regRes.data?.slice(0, 5).map(r => ({ ...r, type: 'PENDAFTRAN', date: r.created_at, label: r.nama_lengkap })) || []),
-                    ...(msgRes.data?.slice(0, 5).map(m => ({ ...m, type: 'PESAN', date: m.created_at, label: m.subjek })) || [])
-                ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8)
-
-                setRecentSubmissions(combined)
+                setRecentPendaftar(pendaftars.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5))
             } catch (error) {
                 console.error('Error fetching stats:', error)
             } finally {
@@ -52,114 +42,109 @@ const Dashboard = () => {
         fetchStats()
     }, [])
 
-    const chartData = [
-        { name: 'Artikel', count: stats.articles },
-        { name: 'Kegiatan', count: stats.activities },
-        { name: 'Pendaftar', count: stats.members },
-        { name: 'Pesan', count: stats.messages },
+    const summaryItems = [
+        { icon: 'bi-people-fill', label: 'Total Pendaftar', value: stats.total_pendaftar, color: 'var(--accent-color)' },
+        { icon: 'bi-journal-text', label: 'Artikel Baru', value: stats.artikel_bulan_ini, color: '#fff' },
+        { icon: 'bi-calendar-event', label: 'Kegiatan Aktif', value: stats.kegiatan_aktif, color: 'var(--accent-color)' },
+        { icon: 'bi-chat-dots-fill', label: 'Pesan Masuk', value: stats.pesan_baru, color: '#ff6366' },
     ]
 
-    const COLORS = ['#F2B661', '#4CAF50', '#2196F3', '#FF5252']
-
     return (
-        <div className="p-4 p-md-5">
-            <div className="mb-5 d-flex justify-content-between align-items-end">
-                <div>
-                    <h1 className="h2 fw-bold text-white mb-1">Command Center</h1>
-                    <p className="text-white-50 small mb-0">Pemantauan real-time operasional Cakra Manggala.</p>
-                </div>
-                <div className="text-end d-none d-md-block">
-                    <div className="badge bg-success bg-opacity-10 text-success px-3 py-2 border border-success border-opacity-25 rounded-0 fw-bold" style={{ fontSize: '0.65rem' }}>
-                        <i className="bi bi-circle-fill me-2 small"></i> SYSTEM ONLINE
-                    </div>
-                </div>
-            </div>
-
-            {/* Top Cards */}
+        <>
             <div className="row g-4 mb-5">
-                {[
-                    { label: 'Artikel Aktif', value: stats.articles, icon: 'bi-journal-richtext', color: '#F2B661' },
-                    { label: 'Total Kegiatan', value: stats.activities, icon: 'bi-calendar-event', color: '#4CAF50' },
-                    { label: 'Warna Baru (Approved)', value: stats.members, icon: 'bi-people', color: '#2196F3' },
-                    { label: 'Unread Messages', value: stats.messages, icon: 'bi-chat-dots', color: '#FF5252' },
-                ].map((c, i) => (
-                    <div className="col-12 col-md-6 col-xl-3" key={i}>
-                        <div className="p-4 h-100" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden' }}>
-                            <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.05, fontSize: '5rem' }}><i className={`bi ${c.icon}`}></i></div>
-                            <span className="small text-uppercase fw-bold text-white-50 d-block mb-3" style={{ letterSpacing: '0.1em' }}>{c.label}</span>
-                            <div className="d-flex align-items-baseline gap-3">
-                                <h3 className="h1 fw-bold text-white mb-0">{c.value}</h3>
-                                <span className={i === 3 && c.value > 0 ? "text-danger animate-pulse" : "text-white-50"}>
-                                    <i className={`bi ${c.icon}`}></i>
-                                </span>
+                {summaryItems.map((item, index) => (
+                    <div className="col-12 col-sm-6 col-xl-3" key={index}>
+                        <div className="stat-card">
+                            <div className="stat-icon" style={{ color: item.color }}>
+                                <i className={`bi ${item.icon}`}></i>
+                            </div>
+                            <div>
+                                <div className="stat-label">{item.label}</div>
+                                <div className="stat-value">{item.value.toLocaleString('id-ID')}</div>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="row g-5">
-                {/* Chart Section */}
-                <div className="col-xl-7">
-                    <div className="h-100 p-4 p-md-5" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div className="d-flex justify-content-between align-items-center mb-5">
-                            <h4 className="small fw-bold text-white text-uppercase" style={{ letterSpacing: '0.15em' }}>Distribusi Data</h4>
-                            <select className="bg-transparent border-0 text-white-50 small outline-none">
-                                <option className="bg-dark">Semua Waktu</option>
-                            </select>
+            <div className="row g-4 mb-5">
+                <div className="col-xl-8">
+                    <div className="admin-card">
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h2 className="h6 fw-bold mb-0 text-uppercase text-accent" style={{ letterSpacing: '0.15em' }}>Pendaftar Terbaru</h2>
+                            <Link to="/dashboard/pendaftar" className="text-decoration-none small fw-bold text-white-50 shadow-none">
+                                KELOLA SEMUA <i className="bi bi-arrow-right ms-1"></i>
+                            </Link>
                         </div>
-                        <div style={{ width: '100%', height: 350 }}>
-                            <ResponsiveContainer>
-                                <BarChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 700 }} dy={10} />
-                                    <YAxis hide />
-                                    <Tooltip
-                                        contentStyle={{ background: '#0a160f', border: '1px solid var(--accent-color)', borderRadius: 0, padding: '10px' }}
-                                        cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                                    />
-                                    <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={40}>
-                                        {chartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
+
+                        <div className="admin-table-wrapper">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Lengkap</th>
+                                        <th>Jurusan</th>
+                                        <th>NIM</th>
+                                        <th className="text-end">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {recentPendaftar.map((pendaftar, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <div className="d-flex align-items-center gap-3">
+                                                    <div className="avatar-sm">{pendaftar.nama_lengkap.substring(0, 1).toUpperCase()}</div>
+                                                    <span className="fw-bold">{pendaftar.nama_lengkap}</span>
+                                                </div>
+                                            </td>
+                                            <td className="text-white-50">{pendaftar.jurusan}</td>
+                                            <td className="text-white-50 font-monospace small">{pendaftar.nim}</td>
+                                            <td className="text-end">
+                                                <Link to={`/dashboard/pendaftar`} className="btn btn-sm btn-outline-light border-0 rounded-0 fw-bold" style={{ fontSize: '0.7rem', letterSpacing: '0.1em', background: 'rgba(255,255,255,0.05)' }}>DETAIL</Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {recentPendaftar.length === 0 && !loading && (
+                                        <tr>
+                                            <td colSpan="4" className="text-center py-5 text-white-50 fst-italic">Data pendaftar belum tersedia.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-
-                {/* Recent Activity List */}
-                <div className="col-xl-5">
-                    <div className="h-100 p-4 p-md-5" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <h4 className="small fw-bold text-white text-uppercase mb-5" style={{ letterSpacing: '0.15em' }}>Paling Gress</h4>
-                        <div className="d-flex flex-column gap-4">
-                            {recentSubmissions.length > 0 ? recentSubmissions.map((sub, i) => (
-                                <div key={i} className="d-flex align-items-center gap-4">
-                                    <div className="flex-shrink-0" style={{ width: '40px', height: '40px', background: sub.type === 'PENDAFTRAN' ? 'rgba(33, 150, 243, 0.1)' : 'rgba(255, 82, 82, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: sub.type === 'PENDAFTRAN' ? '#2196F3' : '#FF5252' }}>
-                                        <i className={`bi ${sub.type === 'PENDAFTRAN' ? 'bi-person-plus' : 'bi-chat-dots'}`}></i>
-                                    </div>
-                                    <div className="flex-grow-1 overflow-hidden">
-                                        <div className="d-flex justify-content-between">
-                                            <span className="small fw-bold text-uppercase" style={{ fontSize: '0.6rem', color: sub.type === 'PENDAFTRAN' ? '#2196F3' : '#FF5252', letterSpacing: '0.1em' }}>{sub.type}</span>
-                                            <span className="small text-white-50" style={{ fontSize: '0.6rem' }}>{new Date(sub.date).toLocaleDateString('id-ID')}</span>
-                                        </div>
-                                        <h5 className="h6 text-white text-truncate mb-0 fw-bold">{sub.label}</h5>
-                                    </div>
+                <div className="col-xl-4">
+                    <div className="admin-card mb-4">
+                        <h2 className="h6 fw-bold mb-4 text-uppercase text-accent" style={{ letterSpacing: '0.15em' }}>Aksi Cepat</h2>
+                        <div className="d-grid gap-3">
+                            <Link to="/dashboard/artikel/create" className="quick-link">
+                                <div className="quick-link__icon"><i className="bi bi-plus-lg"></i></div>
+                                <div className="quick-link__body">
+                                    <span className="d-block fw-bold mb-1">Tulis Artikel</span>
+                                    <small className="text-white-50">Publikasi berita terbaru</small>
                                 </div>
-                            )) : (
-                                <div className="py-5 text-center text-white-50 small italic">Belum ada aktivitas baru.</div>
-                            )}
-                        </div>
-                        <div className="mt-5 pt-4 border-top border-secondary border-opacity-25">
-                            <Link to="/dashboard/pendaftar" className="text-accent text-decoration-none small fw-bold text-uppercase d-flex align-items-center gap-2">
-                                Semua Aktivitas <i className="bi bi-arrow-right"></i>
+                            </Link>
+                            <Link to="/dashboard/kegiatan/create" className="quick-link">
+                                <div className="quick-link__icon" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--accent-color)' }}><i className="bi bi-calendar-plus"></i></div>
+                                <div className="quick-link__body">
+                                    <span className="d-block fw-bold mb-1">Tambah Agenda</span>
+                                    <small className="text-white-50">Jadwalkan kegiatan baru</small>
+                                </div>
                             </Link>
                         </div>
                     </div>
+
+                    <div className="admin-card text-center" style={{ background: 'var(--primary-color) !important', border: 'none' }}>
+                        <h2 className="h6 fw-bold mb-4 text-uppercase text-white" style={{ letterSpacing: '0.15em' }}>Sistem Log</h2>
+                        <div className="icon-badge mb-4 mx-auto" style={{ width: '60px', height: '60px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}><i className="bi bi-shield-check"></i></div>
+                        <p className="small text-white-50 mb-4 px-3">Pastikan data pendaftar selalu dicadangkan secara berkala untuk keperluan arsip organisasi.</p>
+                        <button className="btn-accent w-100" onClick={() => alert('Fitur Export dalam pengembangan.')}>
+                            <i className="bi bi-cloud-arrow-down me-2"></i> BACKUP SEKARANG
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

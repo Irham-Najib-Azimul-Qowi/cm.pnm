@@ -23,7 +23,7 @@ const ActivitiesManagement = () => {
     }, [])
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Yakin ingin menghapus kegiatan ini?')) return
+        if (!window.confirm('Hapus agenda ini?')) return
         try {
             const token = localStorage.getItem('token')
             await axios.delete(`/api/admin/activities?id=${id}`, {
@@ -36,77 +36,95 @@ const ActivitiesManagement = () => {
     }
 
     return (
-        <div className="p-4 p-md-5">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
+        <>
+            <div className="d-flex justify-content-between align-items-center mb-5">
                 <div>
-                    <h1 className="h2 fw-bold text-white mb-1">Manajemen Kegiatan</h1>
-                    <p className="text-white-50 small mb-0">Arsip rekam jejak dan dokumentasi UKM.</p>
+                    <h1 className="h3 fw-black mb-1" style={{ letterSpacing: '-0.02em' }}>AGENDA & KEGIATAN</h1>
+                    <p className="text-white-50 small fw-bold text-uppercase" style={{ letterSpacing: '0.1em' }}>Manajemen Aktivitas Cakra Manggala</p>
                 </div>
-                <Link to="/dashboard/kegiatan/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
-                    <i className="bi bi-plus-lg me-2"></i> TAMBAH KEGIATAN BARU
+                <Link to="/dashboard/kegiatan/create" className="btn btn-accent d-inline-flex align-items-center gap-2">
+                    <i className="bi bi-calendar-plus-fill"></i> TAMBAH AGENDA
                 </Link>
             </div>
 
-            <div className="p-0 overflow-hidden" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div className="table-responsive">
-                    <table className="table table-dark table-hover mb-0 align-middle">
-                        <thead style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="admin-table-wrapper">
+                <table className="admin-table">
+                    <thead>
+                        <tr>
+                            <th className="text-center" style={{ width: '100px' }}>Jadwal</th>
+                            <th style={{ width: '80px' }}>Foto</th>
+                            <th>Detail Kegiatan</th>
+                            <th className="d-none d-md-table-cell">Lokasi</th>
+                            <th className="d-none d-md-table-cell text-center">Sifat</th>
+                            <th className="text-end">Opsi Manajemen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
                             <tr>
-                                <th className="ps-4 py-4 border-0 small text-uppercase">Nama Kegiatan</th>
-                                <th className="py-4 border-0 small text-uppercase">Tahun</th>
-                                <th className="py-4 border-0 small text-uppercase">Sifat</th>
-                                <th className="py-4 border-0 small text-uppercase">Tanggal</th>
-                                <th className="pe-4 py-4 border-0 text-end small text-uppercase">Aksi</th>
+                                <td colSpan="6" className="text-center py-5">
+                                    <div className="spinner-border text-accent" role="status"></div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="text-center py-5">
-                                        <div className="spinner-border text-accent" role="status"></div>
-                                    </td>
-                                </tr>
-                            ) : kegiatans.length > 0 ? kegiatans.map(keg => (
-                                <tr key={keg.id}>
-                                    <td className="ps-4 py-4">
-                                        <div className="d-flex align-items-center gap-3">
-                                            <div style={{ width: '60px', height: '40px', background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-                                                {keg.gambar_utama && <img src={keg.gambar_utama} alt="" className="w-100 h-100 object-fit-cover" />}
-                                            </div>
-                                            <div>
-                                                <div className="fw-bold text-white">{keg.judul_kegiatan}</div>
-                                                <div className="small text-white-50">{keg.tempat}</div>
-                                            </div>
+                        ) : kegiatans.length > 0 ? kegiatans.map(kegiatan => {
+                            const dateObj = new Date(kegiatan.tanggal_pelaksanaan)
+                            const day = dateObj.getDate().toString().padStart(2, '0')
+                            const month = dateObj.toLocaleDateString('id-ID', { month: 'short' }).toUpperCase()
+                            return (
+                                <tr key={kegiatan.id}>
+                                    <td className="text-center">
+                                        <div className="d-inline-flex flex-column align-items-center justify-content-center"
+                                            style={{ width: '54px', height: '54px', background: 'var(--primary)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <span className="fw-black text-white" style={{ fontSize: '1.25rem', lineHeight: '1' }}>{day}</span>
+                                            <span className="x-small fw-bold text-accent" style={{ fontSize: '0.6rem', letterSpacing: '0.1em' }}>{month}</span>
                                         </div>
                                     </td>
-                                    <td className="fw-bold">{keg.tahun}</td>
                                     <td>
-                                        <span className={`px-2 py-1 small fw-bold ${keg.sifat === 'internal' ? 'text-info' : 'text-accent'}`}>
-                                            {keg.sifat.toUpperCase()}
-                                        </span>
+                                        {kegiatan.gambar_utama ? (
+                                            <img src={kegiatan.gambar_utama} style={{ width: '54px', height: '54px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }} alt="" />
+                                        ) : (
+                                            <div style={{ width: '54px', height: '54px', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                <i className="bi bi-image text-white-50"></i>
+                                            </div>
+                                        )}
                                     </td>
-                                    <td className="small text-white-50">{new Date(keg.tanggal_pelaksanaan).toLocaleDateString('id-ID')}</td>
-                                    <td className="pe-4 text-end">
+                                    <td>
+                                        <div className="fw-bold text-white mb-1" style={{ fontSize: '1rem' }}>{kegiatan.judul_kegiatan}</div>
+                                        <div className="x-small text-white-50 fw-bold text-uppercase" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>PJ: {kegiatan.kapel_pj}</div>
+                                    </td>
+                                    <td className="small text-white-50 d-none d-md-table-cell">
+                                        <div className="d-flex align-items-center gap-2">
+                                            <i className="bi bi-geo-alt-fill text-accent"></i>
+                                            {kegiatan.tempat}
+                                        </div>
+                                    </td>
+                                    <td className="text-center d-none d-md-table-cell">
+                                        {kegiatan.sifat === 'internal' ? (
+                                            <span className="admin-badge admin-badge--success">INTERNAL</span>
+                                        ) : (
+                                            <span className="admin-badge admin-badge--warning">EKSTERNAL</span>
+                                        )}
+                                    </td>
+                                    <td className="text-end">
                                         <div className="d-flex justify-content-end gap-2">
-                                            <Link to={`/dashboard/kegiatan/edit/${keg.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2">
-                                                <i className="bi bi-pencil-fill"></i>
-                                            </Link>
-                                            <button onClick={() => handleDelete(keg.id)} className="btn btn-sm btn-outline-danger rounded-0 border-0 p-2">
-                                                <i className="bi bi-trash-fill"></i>
-                                            </button>
+                                            <Link to={`/dashboard/kegiatan/edit/${kegiatan.id}`}
+                                                className="btn btn-sm btn-outline-light border-0 rounded-0 fw-bold px-3"
+                                                style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.05)', letterSpacing: '0.1em' }}>EDIT</Link>
+                                            <button onClick={() => handleDelete(kegiatan.id)} className="btn btn-sm border-0 rounded-0 fw-bold px-3"
+                                                style={{ fontSize: '0.7rem', background: 'rgba(255,99,102,0.1)', color: '#ff6366', letterSpacing: '0.1em' }}>HAPUS</button>
                                         </div>
                                     </td>
                                 </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="5" className="text-center py-5 text-white-50 italic">Belum ada data kegiatan.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                            )
+                        }) : (
+                            <tr>
+                                <td colSpan="6" className="text-center py-5 text-white-50 fst-italic">Belum ada agenda kegiatan yang terdaftar.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </>
     )
 }
 
