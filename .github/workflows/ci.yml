@@ -2,9 +2,17 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '**'
   pull_request:
     branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   backend-check:
@@ -16,12 +24,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version-file: go.mod
           cache-dependency-path: go.mod
 
       - name: Download Dependencies
-        run: go mod tidy
-        working-directory: ./
+        run: go mod download
 
       - name: Verify Go Build (Isolation Check)
         run: |
@@ -45,7 +52,10 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Lint Check
+        run: npm run lint
 
       - name: Build Check
         run: npm run build
@@ -54,7 +64,7 @@ jobs:
     name: Production Guard
     needs: [backend-check, frontend-check]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Signal Success
         run: echo "Code is production-ready. Proceeding to Vercel auto-deploy."
