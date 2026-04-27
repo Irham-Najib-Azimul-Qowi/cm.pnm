@@ -3476,3 +3476,10 @@ h3 {
         height: 120px;
     }
 }
+/* FORCE NAVBAR & FOOTER VISIBILITY */
+.site-navbar, .footer {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+}
