@@ -137,15 +137,40 @@ const OfficerForm = () => {
                     </select>
                 </div>
                 <div className="mb-5">
-                    <label className="form-label small fw-bold text-white-50 text-uppercase">URL Foto Profil</label>
-                    <input
-                        type="text"
-                        className="form-control bg-transparent py-3 text-white rounded-0"
-                        style={{ border: '1px solid rgba(255,255,255,0.1)' }}
-                        value={formData.foto}
-                        onChange={(e) => setFormData({ ...formData, foto: e.target.value })}
-                        placeholder="https://..."
-                    />
+                    <label className="form-label small fw-bold text-white-50 text-uppercase">Foto Profil (Otomatis Upload)</label>
+                    <div className="d-flex flex-column flex-md-row gap-3 align-items-md-center">
+                        {formData.foto && (
+                            <img src={formData.foto} alt="Preview" style={{ width: '80px', height: '80px', objectFit: 'cover', border: '1px solid var(--accent-color)' }} />
+                        )}
+                        <div className="flex-grow-1">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="form-control bg-transparent py-3 text-white rounded-0"
+                                style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+                                onChange={async (e) => {
+                                    const file = e.target.files[0]
+                                    if (!file) return
+
+                                    const uploadData = new FormData()
+                                    uploadData.append('gambar', file)
+
+                                    try {
+                                        setLoading(true)
+                                        const res = await axios.post('/api/upload', uploadData)
+                                        if (res.data.url) {
+                                            setFormData({ ...formData, foto: res.data.url })
+                                        }
+                                    } catch (err) {
+                                        alert('Gagal mengunggah gambar ke server Vercel.')
+                                    } finally {
+                                        setLoading(false)
+                                    }
+                                }}
+                            />
+                            <small className="text-white-50 mt-2 d-block">Silakan pilih file gambar dari perangkat Anda. Ini otomatis tersimpan ke Vercel Blob.</small>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="d-grid gap-3">
