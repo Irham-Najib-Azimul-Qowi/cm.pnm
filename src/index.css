@@ -2316,12 +2316,7 @@ select.form-select option {
     --dark: #07110c;
 }
 
-body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    overflow: hidden;
-    background: var(--dark);
-}
+
 
 h1,
 h2,
@@ -3476,8 +3471,10 @@ h3 {
         height: 120px;
     }
 }
+
 /* FORCE NAVBAR & FOOTER VISIBILITY */
-.site-navbar, .footer {
+.site-navbar,
+.footer {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
