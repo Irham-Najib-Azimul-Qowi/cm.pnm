@@ -25,6 +25,31 @@ func adminPendaftaranHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	database := db.GetDB()
+	id := r.URL.Query().Get("id")
+
+	if id != "" {
+		var reg models.Pendaftaran
+		if err := database.Where("id = ?", id).First(&reg).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if r.Method == http.MethodPut {
+			json.NewDecoder(r.Body).Decode(&reg)
+			database.Save(&reg)
+			json.NewEncoder(w).Encode(reg)
+			return
+		}
+
+		if r.Method == http.MethodDelete {
+			database.Delete(&reg)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
 	if r.Method == http.MethodGet {
 		var regs []models.Pendaftaran

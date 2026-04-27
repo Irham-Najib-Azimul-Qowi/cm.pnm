@@ -25,6 +25,36 @@ func adminArticlesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	database := db.GetDB()
+	id := r.URL.Query().Get("id")
+
+	if id != "" {
+		var art models.Artikel
+		if err := database.Where("id = ?", id).First(&art).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			json.NewEncoder(w).Encode(art)
+			return
+		}
+
+		if r.Method == http.MethodPut {
+			json.NewDecoder(r.Body).Decode(&art)
+			database.Save(&art)
+			json.NewEncoder(w).Encode(art)
+			return
+		}
+
+		if r.Method == http.MethodDelete {
+			database.Delete(&art)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
 	if r.Method == http.MethodGet {
 		var articles []models.Artikel

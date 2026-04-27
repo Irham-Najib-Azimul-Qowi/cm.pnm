@@ -27,8 +27,8 @@ const RegistrationsManagement = () => {
     const handleUpdateStatus = async (id, status) => {
         try {
             const token = localStorage.getItem('token')
-            await axios.put(`/api/admin/pendaftaran/\${id}`, { status, is_approved: status === 'approved' }, {
-                headers: { Authorization: `Bearer \${token}` }
+            await axios.put(`/api/admin/pendaftaran?id=${id}`, { status, is_approved: status === 'approved' }, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchData()
         } catch (error) {
@@ -40,8 +40,8 @@ const RegistrationsManagement = () => {
         if (!window.confirm('Hapus pendaftaran ini?')) return
         try {
             const token = localStorage.getItem('token')
-            await axios.delete(`/api/admin/pendaftaran/\${id}`, {
-                headers: { Authorization: `Bearer \${token}` }
+            await axios.delete(`/api/admin/pendaftaran?id=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchData()
         } catch (error) {

@@ -13,7 +13,7 @@ const ArticleDetail = () => {
         const fetchDetail = async () => {
             setLoading(true)
             try {
-                const res = await axios.get(`/api/articles/\${slug}`)
+                const res = await axios.get(`/api/articles?slug=${slug}`)
                 setArtikel(res.data)
 
                 // Fetch related (random or latest excluding current)

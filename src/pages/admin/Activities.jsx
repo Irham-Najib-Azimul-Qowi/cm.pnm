@@ -26,8 +26,8 @@ const ActivitiesManagement = () => {
         if (!window.confirm('Yakin ingin menghapus kegiatan ini?')) return
         try {
             const token = localStorage.getItem('token')
-            await axios.delete(`/api/admin/activities/\${id}`, {
-                headers: { Authorization: `Bearer \${token}` }
+            await axios.delete(`/api/admin/activities?id=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchKegiatans()
         } catch (error) {

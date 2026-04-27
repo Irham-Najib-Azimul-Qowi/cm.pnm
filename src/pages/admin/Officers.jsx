@@ -26,8 +26,8 @@ const OfficersManagement = () => {
         if (!window.confirm('Hapus pengurus ini?')) return
         try {
             const token = localStorage.getItem('token')
-            await axios.delete(`/api/admin/pengurus/\${id}`, {
-                headers: { Authorization: `Bearer \${token}` }
+            await axios.delete(`/api/admin/pengurus?id=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchData()
         } catch (error) {

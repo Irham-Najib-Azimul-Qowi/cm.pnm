@@ -25,6 +25,36 @@ func adminActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	database := db.GetDB()
+	id := r.URL.Query().Get("id")
+
+	if id != "" {
+		var keg models.Kegiatan
+		if err := database.Where("id = ?", id).First(&keg).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			json.NewEncoder(w).Encode(keg)
+			return
+		}
+
+		if r.Method == http.MethodPut {
+			json.NewDecoder(r.Body).Decode(&keg)
+			database.Save(&keg)
+			json.NewEncoder(w).Encode(keg)
+			return
+		}
+
+		if r.Method == http.MethodDelete {
+			database.Delete(&keg)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
 	if r.Method == http.MethodPost {
 		var keg models.Kegiatan

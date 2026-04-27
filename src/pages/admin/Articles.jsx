@@ -28,8 +28,8 @@ const ArticlesManagement = () => {
         if (!window.confirm('Yakin ingin menghapus artikel ini?')) return
         try {
             const token = localStorage.getItem('token')
-            await axios.delete(`/api/admin/articles/\${id}`, {
-                headers: { Authorization: `Bearer \${token}` }
+            await axios.delete(`/api/admin/articles?id=${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchArtikels()
         } catch (error) {

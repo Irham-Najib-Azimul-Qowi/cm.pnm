@@ -24,8 +24,8 @@ const ActivityForm = () => {
             const fetchDetail = async () => {
                 try {
                     const token = localStorage.getItem('token')
-                    const res = await axios.get(`/api/admin/activities/\${id}`, {
-                        headers: { Authorization: `Bearer \${token}` }
+                    const res = await axios.get(`/api/admin/activities?id=${id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
                     })
                     // Format date for input: "2023-11-20"
                     const date = res.data.tanggal_pelaksanaan ? res.data.tanggal_pelaksanaan.split('T')[0] : ''
@@ -50,12 +50,12 @@ const ActivityForm = () => {
             }
 
             if (isEdit) {
-                await axios.put(`/api/admin/activities/\${id}`, payload, {
-                    headers: { Authorization: `Bearer \${token}` }
+                await axios.put(`/api/admin/activities?id=${id}`, payload, {
+                    headers: { Authorization: `Bearer ${token}` }
                 })
             } else {
                 await axios.post('/api/admin/activities', payload, {
-                    headers: { Authorization: `Bearer \${token}` }
+                    headers: { Authorization: `Bearer ${token}` }
                 })
             }
             navigate('/dashboard/activities')

@@ -16,6 +16,19 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	database := db.GetDB()
+	
+	slug := r.URL.Query().Get("slug")
+	if slug != "" {
+		var artikel models.Artikel
+		if err := database.Preload("User").Where("slug = ?", slug).First(&artikel).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		database.Model(&artikel).Update("views", artikel.Views+1)
+		json.NewEncoder(w).Encode(artikel)
+		return
+	}
+
 	var artikels []models.Artikel
 
 	query := database.Preload("User").Order("created_at desc")

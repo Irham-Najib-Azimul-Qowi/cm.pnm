@@ -25,6 +25,36 @@ func adminPengurusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	database := db.GetDB()
+	id := r.URL.Query().Get("id")
+
+	if id != "" {
+		var o models.Pengurus
+		if err := database.Where("id = ?", id).First(&o).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		if r.Method == http.MethodGet {
+			json.NewEncoder(w).Encode(o)
+			return
+		}
+
+		if r.Method == http.MethodPut {
+			json.NewDecoder(r.Body).Decode(&o)
+			database.Save(&o)
+			json.NewEncoder(w).Encode(o)
+			return
+		}
+
+		if r.Method == http.MethodDelete {
+			database.Delete(&o)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
 	if r.Method == http.MethodPost {
 		var o models.Pengurus

@@ -27,8 +27,8 @@ const MessagesManagement = () => {
     const handleMarkRead = async (id, isRead) => {
         try {
             const token = localStorage.getItem('token')
-            await axios.put(`/api/admin/pesan/\${id}`, { is_read: isRead }, {
-                headers: { Authorization: `Bearer \${token}` }
+            await axios.put(`/api/admin/pesan?id=${id}`, { is_read: isRead }, {
+                headers: { Authorization: `Bearer ${token}` }
             })
             fetchData()
         } catch (error) {

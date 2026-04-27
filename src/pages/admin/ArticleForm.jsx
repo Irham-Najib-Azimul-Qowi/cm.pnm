@@ -28,8 +28,8 @@ const ArticleForm = () => {
                     // I created api/admin/articles/[id]/index.go which handles PUT but not GET.
                     // I'll update it to handle GET too.
                     const token = localStorage.getItem('token')
-                    const res = await axios.get(`/api/admin/articles/\${id}`, {
-                        headers: { Authorization: `Bearer \${token}` }
+                    const res = await axios.get(`/api/admin/articles?id=${id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
                     })
                     setFormData(res.data)
                 } catch (error) {
@@ -46,12 +46,12 @@ const ArticleForm = () => {
         try {
             const token = localStorage.getItem('token')
             if (isEdit) {
-                await axios.put(`/api/admin/articles/\${id}`, formData, {
-                    headers: { Authorization: `Bearer \${token}` }
+                await axios.put(`/api/admin/articles?id=${id}`, formData, {
+                    headers: { Authorization: `Bearer ${token}` }
                 })
             } else {
                 await axios.post('/api/admin/articles', formData, {
-                    headers: { Authorization: `Bearer \${token}` }
+                    headers: { Authorization: `Bearer ${token}` }
                 })
             }
             navigate('/dashboard/articles')

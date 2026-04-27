@@ -20,8 +20,8 @@ const OfficerForm = () => {
             const fetchDetail = async () => {
                 try {
                     const token = localStorage.getItem('token')
-                    const res = await axios.get(`/api/admin/pengurus/\${id}`, {
-                        headers: { Authorization: `Bearer \${token}` }
+                    const res = await axios.get(`/api/admin/pengurus?id=${id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
                     })
                     setFormData(res.data)
                 } catch (error) {
@@ -43,12 +43,12 @@ const OfficerForm = () => {
             }
 
             if (isEdit) {
-                await axios.put(`/api/admin/pengurus/\${id}`, payload, {
-                    headers: { Authorization: `Bearer \${token}` }
+                await axios.put(`/api/admin/pengurus?id=${id}`, payload, {
+                    headers: { Authorization: `Bearer ${token}` }
                 })
             } else {
                 await axios.post('/api/admin/pengurus', payload, {
-                    headers: { Authorization: `Bearer \${token}` }
+                    headers: { Authorization: `Bearer ${token}` }
                 })
             }
             navigate('/dashboard/officers')
