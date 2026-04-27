@@ -5,14 +5,12 @@ import { Link } from 'react-router-dom'
 const ArticlesManagement = () => {
     const [artikels, setArtikels] = useState([])
     const [loading, setLoading] = useState(true)
-    const [stats, setStats] = useState({})
 
     const fetchArtikels = async () => {
         setLoading(true)
         try {
             const res = await axios.get('/api/articles?per_page=100')
             setArtikels(res.data.data || [])
-            setStats(res.data.stats || {})
         } catch (error) {
             console.error('Error fetching articles:', error)
         } finally {
@@ -25,7 +23,7 @@ const ArticlesManagement = () => {
     }, [])
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Yakin ingin menghapus artikel ini?')) return
+        if (!window.confirm('Hapus artikel ini?')) return
         try {
             const token = localStorage.getItem('token')
             await axios.delete(`/api/admin/articles?id=${id}`, {
@@ -37,99 +35,113 @@ const ArticlesManagement = () => {
         }
     }
 
+    const toggleStatus = async (artikel) => {
+        try {
+            const token = localStorage.getItem('token')
+            const nextStatus = artikel.status === 'published' ? 'draft' : 'published'
+            await axios.put(`/api/admin/articles?id=${artikel.id}`, { status: nextStatus }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            fetchArtikels()
+        } catch (error) {
+            alert('Gagal update status artikel: ' + (error.response?.data?.error || error.message))
+        }
+    }
+
     return (
-        <div className="p-4 p-md-5">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
+        <>
+            <div className="d-flex justify-content-between align-items-center mb-5">
                 <div>
-                    <h1 className="h2 fw-bold text-white mb-1">Manajemen Artikel</h1>
-                    <p className="text-white-50 small mb-0">Kelola publikasi, draf, dan konten edukasi.</p>
+                    <h1 className="h3 fw-black mb-1" style={{ letterSpacing: '-0.02em' }}>KONTEN & ARTIKEL</h1>
+                    <p className="text-white-50 small fw-bold text-uppercase" style={{ letterSpacing: '0.1em' }}>Pusat Publikasi Cakra Manggala</p>
                 </div>
-                <Link to="/dashboard/artikel/create" className="btn-join-premium px-4 py-3 rounded-0 text-decoration-none" style={{ fontSize: '0.8rem' }}>
-                    <i className="bi bi-plus-lg me-2"></i> TULIS ARTIKEL BARU
+                <Link to="/dashboard/artikel/create" className="btn btn-accent d-inline-flex align-items-center gap-2">
+                    <i className="bi bi-plus-lg"></i> TULIS ARTIKEL
                 </Link>
             </div>
 
-            {/* Stats Row */}
-            <div className="row g-4 mb-5">
-                {[
-                    { label: 'Total Artikel', value: stats.total || 0, icon: 'bi-journal-text', color: 'bg-primary' },
-                    { label: 'Published', value: stats.published || 0, icon: 'bi-check-circle', color: 'bg-success' },
-                    { label: 'Draft', value: stats.draft || 0, icon: 'bi-pencil-square', color: 'bg-warning' },
-                    { label: 'Total Views', value: stats.total_views || 0, icon: 'bi-eye', color: 'bg-info' },
-                ].map((s, i) => (
-                    <div className="col-sm-6 col-xl-3" key={i}>
-                        <div className="p-4" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <div className="d-flex justify-content-between align-items-center mb-3">
-                                <span className="small text-uppercase fw-bold text-white-50">{s.label}</span>
-                                <i className={`bi ${s.icon} text-accent`}></i>
-                            </div>
-                            <h3 className="h2 fw-bold text-white mb-0">{s.value}</h3>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Table */}
-            <div className="p-0 overflow-hidden" style={{ background: 'var(--primary-color)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div className="table-responsive">
-                    <table className="table table-dark table-hover mb-0 align-middle">
-                        <thead style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="admin-table-wrapper">
+                <table className="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Informasi Artikel</th>
+                            <th className="d-none d-md-table-cell">Penulis</th>
+                            <th className="d-none d-md-table-cell text-center">Interaksi</th>
+                            <th className="d-none d-md-table-cell text-center">Status</th>
+                            <th className="text-end">Opsi Manajemen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading ? (
                             <tr>
-                                <th className="ps-4 py-4 border-0 small text-uppercase">Artikel</th>
-                                <th className="py-4 border-0 small text-uppercase">Status</th>
-                                <th className="py-4 border-0 small text-uppercase">Views</th>
-                                <th className="py-4 border-0 small text-uppercase">Tanggal</th>
-                                <th className="pe-4 py-4 border-0 text-end small text-uppercase">Aksi</th>
+                                <td colSpan="5" className="text-center py-5">
+                                    <div className="spinner-border text-accent" role="status"></div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="text-center py-5">
-                                        <div className="spinner-border text-accent" role="status"></div>
-                                    </td>
-                                </tr>
-                            ) : artikels.length > 0 ? artikels.map(art => (
-                                <tr key={art.id} style={{ transition: 'all 0.3s' }}>
-                                    <td className="ps-4 py-4">
-                                        <div className="d-flex align-items-center gap-3">
-                                            <div style={{ width: '60px', height: '40px', background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
-                                                {art.gambar_utama && <img src={art.gambar_utama} alt="" className="w-100 h-100 object-fit-cover" />}
+                        ) : artikels.length > 0 ? artikels.map(artikel => (
+                            <tr key={artikel.id}>
+                                <td>
+                                    <div className="d-flex align-items-center gap-4">
+                                        <div style={{ width: '80px', height: '54px', background: 'rgba(0,0,0,0.5)', flexShrink: 0, border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            {artikel.gambar_utama ? (
+                                                <img src={artikel.gambar_utama} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} alt="" />
+                                            ) : (
+                                                <div className="d-flex align-items-center justify-content-center h-100"><i className="bi bi-image text-white-50"></i></div>
+                                            )}
+                                        </div>
+                                        <div className="overflow-hidden">
+                                            <div className="fw-bold mb-1" style={{ fontSize: '1rem' }}>
+                                                {artikel.judul}
                                             </div>
-                                            <div>
-                                                <div className="fw-bold text-white">{art.judul}</div>
-                                                <div className="small text-white-50">oleh {art.user?.name}</div>
+                                            <div className="text-white-50 x-small fw-bold text-uppercase" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+                                                {new Date(artikel.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </div>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <span className={`px-3 py-1 small fw-bold ${art.status === 'published' ? 'bg-success bg-opacity-10 text-success' : 'bg-warning bg-opacity-10 text-warning'}`}>
-                                            {art.status.toUpperCase()}
-                                        </span>
-                                    </td>
-                                    <td className="fw-bold">{art.views}</td>
-                                    <td className="small text-white-50">{new Date(art.created_at).toLocaleDateString('id-ID')}</td>
-                                    <td className="pe-4 text-end">
-                                        <div className="d-flex justify-content-end gap-2">
-                                            <Link to={`/dashboard/artikel/edit/${art.id}`} className="btn btn-sm btn-outline-light rounded-0 border-0 p-2" title="Edit">
-                                                <i className="bi bi-pencil-fill"></i>
-                                            </Link>
-                                            <button onClick={() => handleDelete(art.id)} className="btn btn-sm btn-outline-danger rounded-0 border-0 p-2" title="Hapus">
-                                                <i className="bi bi-trash-fill"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="5" className="text-center py-5 text-white-50 italic">Belum ada artikel.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                </td>
+                                <td className="small text-white-50 d-none d-md-table-cell">
+                                    <div className="d-flex align-items-center gap-2">
+                                        <i className="bi bi-person-circle"></i>
+                                        {artikel.user?.name || 'Administrator'}
+                                    </div>
+                                </td>
+                                <td className="text-center d-none d-md-table-cell">
+                                    <div className="small fw-bold"><i className="bi bi-eye-fill text-accent me-1"></i>
+                                        {artikel.views?.toLocaleString('id-ID') || 0}
+                                    </div>
+                                </td>
+                                <td className="text-center d-none d-md-table-cell">
+                                    {artikel.status === 'published' ? (
+                                        <span className="admin-badge admin-badge--success">PUBLISHED</span>
+                                    ) : (
+                                        <span className="admin-badge">DRAFT</span>
+                                    )}
+                                </td>
+                                <td className="text-end">
+                                    <div className="d-flex justify-content-end gap-2">
+                                        <Link to={`/dashboard/artikel/edit/${artikel.id}`}
+                                            className="btn btn-sm btn-outline-light border-0 rounded-0 fw-bold px-3"
+                                            style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.05)', letterSpacing: '0.1em' }}>EDIT</Link>
+                                        <button onClick={() => toggleStatus(artikel)}
+                                            className="btn btn-sm border-0 rounded-0 fw-bold px-3"
+                                            style={{ fontSize: '0.7rem', background: artikel.status === 'published' ? 'rgba(255,99,102,0.1)' : 'var(--primary)', color: artikel.status === 'published' ? '#ff6366' : 'var(--accent)', letterSpacing: '0.1em' }}>
+                                            {artikel.status === 'published' ? 'DRAFT' : 'PUBLISH'}
+                                        </button>
+                                        <button onClick={() => handleDelete(artikel.id)}
+                                            className="btn btn-sm border-0 rounded-0 fw-bold px-3"
+                                            style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.05)', color: '#ff6366', letterSpacing: '0.1em' }}>HAPUS</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        )) : (
+                            <tr>
+                                <td colSpan="5" className="text-center py-5 text-white-50 fst-italic">Belum ada artikel yang dipublikasikan.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </>
     )
 }
 
