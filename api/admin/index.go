@@ -10,7 +10,6 @@ import (
 	"cakra-manggala-api/api/_pkg/db"
 	"cakra-manggala-api/api/_pkg/middleware"
 	"cakra-manggala-api/api/_pkg/models"
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
