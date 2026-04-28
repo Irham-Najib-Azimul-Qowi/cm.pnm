@@ -343,20 +343,20 @@ func adminSetupHandler(w http.ResponseWriter, r *http.Request) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("admin123"), bcrypt.DefaultCost)
 	admin := models.User{
 		Name:     "Admin Cakra",
-		Email:    "admin@.cm",
+		Email:    "admin@cm.com",
 		Password: string(hashedPassword),
 		Role:     "admin",
 	}
-	database.Where(models.User{Email: "admin@.cm"}).Assign(models.User{Password: string(hashedPassword), Role: "admin"}).FirstOrCreate(&admin)
+	database.Where(models.User{Email: "admin@cm.com"}).Assign(models.User{Password: string(hashedPassword), Role: "admin"}).FirstOrCreate(&admin)
 
 	hashedModPassword, _ := bcrypt.GenerateFromPassword([]byte("moderator123"), bcrypt.DefaultCost)
 	mod := models.User{
 		Name:     "Moderator Cakra",
-		Email:    "moderator@.cm",
+		Email:    "moderator@cm.com",
 		Password: string(hashedModPassword),
 		Role:     "moderator",
 	}
-	database.Where(models.User{Email: "moderator@.cm"}).Assign(models.User{Password: string(hashedModPassword), Role: "moderator"}).FirstOrCreate(&mod)
+	database.Where(models.User{Email: "moderator@cm.com"}).Assign(models.User{Password: string(hashedModPassword), Role: "moderator"}).FirstOrCreate(&mod)
 
 	database.FirstOrCreate(&models.Artikel{
 		Judul:  "Mengenal Navigasi Darat",
