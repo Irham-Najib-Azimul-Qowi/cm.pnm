@@ -46,20 +46,27 @@ func routeSegment(r *http.Request, prefix string) string {
 	return strings.Trim(path, "/")
 }
 
-func adminUserID(w http.ResponseWriter, r *http.Request) (uuid.UUID, bool) {
+func adminUser(w http.ResponseWriter, r *http.Request) (*models.User, bool) {
 	authHeader := r.Header.Get("Authorization")
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	claims, err := auth.ValidateToken(tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		return uuid.Nil, false
+		return nil, false
 	}
 
-	return claims.UserID, true
+	database := db.GetDB()
+	var user models.User
+	if err := database.Where("id = ?", claims.UserID).First(&user).Error; err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return nil, false
+	}
+
+	return &user, true
 }
 
 func adminArticlesHandler(w http.ResponseWriter, r *http.Request) {
-	userID, ok := adminUserID(w, r)
+	user, ok := adminUser(w, r)
 	if !ok {
 		return
 	}
@@ -106,7 +113,7 @@ func adminArticlesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		var art models.Artikel
 		json.NewDecoder(r.Body).Decode(&art)
-		art.UserID = userID
+		art.UserID = user.ID
 		database.Create(&art)
 		json.NewEncoder(w).Encode(art)
 		return
@@ -116,7 +123,12 @@ func adminArticlesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func adminPengurusHandler(w http.ResponseWriter, r *http.Request) {
-	if _, ok := adminUserID(w, r); !ok {
+	user, ok := adminUser(w, r)
+	if !ok {
+		return
+	}
+	if user.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -167,7 +179,12 @@ func adminPengurusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func adminPendaftaranHandler(w http.ResponseWriter, r *http.Request) {
-	if _, ok := adminUserID(w, r); !ok {
+	user, ok := adminUser(w, r)
+	if !ok {
+		return
+	}
+	if user.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -209,7 +226,7 @@ func adminPendaftaranHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func adminActivitiesHandler(w http.ResponseWriter, r *http.Request) {
-	userID, ok := adminUserID(w, r)
+	user, ok := adminUser(w, r)
 	if !ok {
 		return
 	}
@@ -249,7 +266,7 @@ func adminActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		var keg models.Kegiatan
 		json.NewDecoder(r.Body).Decode(&keg)
-		keg.UserID = userID
+		keg.UserID = user.ID
 		database.Create(&keg)
 		json.NewEncoder(w).Encode(keg)
 		return
@@ -259,7 +276,12 @@ func adminActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func adminPesanHandler(w http.ResponseWriter, r *http.Request) {
-	if _, ok := adminUserID(w, r); !ok {
+	user, ok := adminUser(w, r)
+	if !ok {
+		return
+	}
+	if user.Role != "admin" {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
@@ -321,11 +343,20 @@ func adminSetupHandler(w http.ResponseWriter, r *http.Request) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("admin123"), bcrypt.DefaultCost)
 	admin := models.User{
 		Name:     "Admin Cakra",
-		Email:    "admin@cakramanggala.com",
+		Email:    "admin@.cm",
 		Password: string(hashedPassword),
 		Role:     "admin",
 	}
-	database.FirstOrCreate(&admin, models.User{Email: "admin@cakramanggala.com"})
+	database.Where(models.User{Email: "admin@.cm"}).Assign(models.User{Password: string(hashedPassword), Role: "admin"}).FirstOrCreate(&admin)
+
+	hashedModPassword, _ := bcrypt.GenerateFromPassword([]byte("moderator123"), bcrypt.DefaultCost)
+	mod := models.User{
+		Name:     "Moderator Cakra",
+		Email:    "moderator@.cm",
+		Password: string(hashedModPassword),
+		Role:     "moderator",
+	}
+	database.Where(models.User{Email: "moderator@.cm"}).Assign(models.User{Password: string(hashedModPassword), Role: "moderator"}).FirstOrCreate(&mod)
 
 	database.FirstOrCreate(&models.Artikel{
 		Judul:  "Mengenal Navigasi Darat",
@@ -335,5 +366,5 @@ func adminSetupHandler(w http.ResponseWriter, r *http.Request) {
 	}, models.Artikel{Slug: "mengenal-navigasi-darat"})
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, `{"message":"Setup complete. Admin: admin@cakramanggala.com / admin123"}`)
+	fmt.Fprintf(w, `{"message":"Setup complete."}`)
 }

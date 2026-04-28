@@ -26,13 +26,13 @@ const AdminLayout = ({ children }) => {
     }
 
     const sidebarLinks = [
-        { name: 'Ikhtisar', path: '/dashboard', icon: 'bi-speedometer2' },
-        { name: 'Artikel', path: '/dashboard/artikel', icon: 'bi-journal-richtext' },
-        { name: 'Kegiatan', path: '/dashboard/kegiatan', icon: 'bi-calendar-event' },
-        { name: 'Pengurus', path: '/dashboard/pengurus', icon: 'bi-people' },
-        { name: 'Pendaftar', path: '/dashboard/pendaftar', icon: 'bi-person-plus' },
-        { name: 'Pesan', path: '/dashboard/pesan', icon: 'bi-chat-left-dots' },
-    ]
+        { name: 'Ikhtisar', path: '/dashboard', icon: 'bi-speedometer2', roles: ['admin', 'moderator'] },
+        { name: 'Artikel', path: '/dashboard/artikel', icon: 'bi-journal-richtext', roles: ['admin', 'moderator'] },
+        { name: 'Kegiatan', path: '/dashboard/kegiatan', icon: 'bi-calendar-event', roles: ['admin', 'moderator'] },
+        { name: 'Pengurus', path: '/dashboard/pengurus', icon: 'bi-people', roles: ['admin'] },
+        { name: 'Pendaftar', path: '/dashboard/pendaftar', icon: 'bi-person-plus', roles: ['admin'] },
+        { name: 'Pesan', path: '/dashboard/pesan', icon: 'bi-chat-left-dots', roles: ['admin'] },
+    ].filter(link => user && link.roles.includes(user.role))
 
     const date = new Date().toLocaleDateString('id-ID', {
         weekday: 'long',
